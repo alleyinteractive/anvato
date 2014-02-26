@@ -75,7 +75,7 @@ class Anvato_Settings {
 	}
 
 	public function sanitize_options( $in ) {
-		# Validate mcp_url
+		# Validate data
 		$out = array();
 
 		$out['mcp_url']     = sanitize_text_field( $in['mcp_url'] );
