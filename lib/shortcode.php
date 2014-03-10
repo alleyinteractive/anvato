@@ -14,11 +14,12 @@ function anvato_shortcode( $attr ) {
 
 	# Set the attributes which the shortcode can override
 	$json = shortcode_atts( array(
-		'mcp' => $defaults['mcp_id'],
+		'mcp'        => $defaults['mcp_id'],
 		'station_id' => $defaults['station_id'],
-		'width' => $defaults['width'],
-		'height' => $defaults['height'],
-		'video' => null,
+		'width'      => $defaults['width'],
+		'height'     => $defaults['height'],
+		'video'      => null,
+		'autoplay'   => false
 	), $attr, 'anvplayer' );
 
 	# Set other attributes that can't be overridden
@@ -33,6 +34,12 @@ function anvato_shortcode( $attr ) {
 	} elseif ( ! empty( $attr['plugin_dfp_adtagurl'] ) && $attr['plugin_dfp_adtagurl'] !== 'false' ) {
 		$json['plugins']['dfp'] = $attr['plugin_dfp_adtagurl'];
 	}
+
+	# Clean up attributes as need be
+	$json['autoplay'] = ( 'true' == $json['autoplay'] );
+
+	# Allow theme/plugins to filter the JSON before outputting
+	$json = apply_filters( 'anvato_anvp_json', $json, $attr );
 
 	return "<div id='{$json['pInstance']}'><script data-anvp='" . json_encode( $json ) . "' src='" . esc_url( $defaults['player_url'] ) . "'></script></div>";
 }
