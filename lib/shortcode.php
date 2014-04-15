@@ -32,7 +32,7 @@ function anvato_shortcode( $attr ) {
 	if ( ! empty( $defaults['adtag'] ) && ( ! isset( $attr['plugin_dfp_adtagurl'] ) || ( empty( $attr['plugin_dfp_adtagurl'] ) && $attr['plugin_dfp_adtagurl'] !== 'false' ) ) ) {
 		$json['plugins']['dfp'] = array( 'adTagUrl' => $defaults['adtag'] );
 	} elseif ( ! empty( $attr['plugin_dfp_adtagurl'] ) && $attr['plugin_dfp_adtagurl'] !== 'false' ) {
-		$json['plugins']['dfp'] = $attr['plugin_dfp_adtagurl'];
+		$json['plugins']['dfp'] = array( 'adTagUrl' => $attr['plugin_dfp_adtagurl'] );
 	}
 
 	# Clean up attributes as need be
