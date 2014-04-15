@@ -41,6 +41,6 @@ function anvato_shortcode( $attr ) {
 	# Allow theme/plugins to filter the JSON before outputting
 	$json = apply_filters( 'anvato_anvp_json', $json, $attr );
 
-	return "<div id='{$json['pInstance']}'><script data-anvp='" . json_encode( $json ) . "' src='" . esc_url( $defaults['player_url'] ) . "'></script></div>";
+	return "<div id='{$json['pInstance']}'></div><script data-anvp='" . json_encode( $json ) . "' src='" . esc_url( $defaults['player_url'] ) . "'></script>";
 }
 add_shortcode( 'anvplayer', 'anvato_shortcode' );
