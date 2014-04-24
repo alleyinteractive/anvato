@@ -30,7 +30,10 @@ function anvato_shortcode( $attr ) {
 
 	# Set the DFP Ad Tag, which can also be overridden
 	if ( ! empty( $defaults['adtag'] ) && ( ! isset( $attr['plugin_dfp_adtagurl'] ) || ( empty( $attr['plugin_dfp_adtagurl'] ) && $attr['plugin_dfp_adtagurl'] !== 'false' ) ) ) {
-		$json['plugins']['dfp'] = array( 'adTagUrl' => $defaults['adtag'] );
+		$adtag = apply_filters( 'anvato_anvp_adtag', $defaults['adtag'] );
+		if ( ! empty( $adtag ) ) {
+			$json['plugins']['dfp'] = array( 'adTagUrl' => $adtag );
+		}
 	} elseif ( ! empty( $attr['plugin_dfp_adtagurl'] ) && $attr['plugin_dfp_adtagurl'] !== 'false' ) {
 		$json['plugins']['dfp'] = array( 'adTagUrl' => $attr['plugin_dfp_adtagurl'] );
 	}
