@@ -44,3 +44,13 @@ function anvato_shortcode( $attr ) {
 	return "<div id='{$json['pInstance']}'></div><script data-anvp='" . json_encode( $json ) . "' src='" . esc_url( $player_url ) . "'></script>";
 }
 add_shortcode( 'anvplayer', 'anvato_shortcode' );
+
+/**
+ * Generate an [anvplayer] shortcode for use in the editor.
+ *
+ * @param int $video The video ID
+ * @return string The shortcode
+ */
+function anvato_generate_shortcode( $video ) {
+	return '[anvplayer video="' . intval( $video ) . '"]';
+}

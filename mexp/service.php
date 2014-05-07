@@ -1,0 +1,111 @@
+<?php
+
+/**
+ * Anvato service for Media Explorer.
+ */
+class MEXP_Anvato_Service extends MEXP_Service {
+
+	/**
+	 * The values of the Anvato plugin option on instantiation.
+	 *
+	 * @var array
+	 */
+	private $option_values;
+
+	/**
+	 * Constructor.
+	 *
+	 * Creates the Backbone view template.
+	 */
+	public function __construct() {
+		$this->option_values = get_option( Anvato_Settings::SLUG );
+		$this->set_template( new MEXP_Anvato_Template );
+	}
+
+	/**
+	 * Fired when the service is loaded.
+	 *
+	 * Allows the service to enqueue JS/CSS only when it's required. Akin to WordPress' load action.
+	 */
+	public function load() {
+		add_filter( 'mexp_tabs',   array( $this, 'tabs' ),   10, 1 );
+		add_filter( 'mexp_labels', array( $this, 'labels' ), 10, 1 );
+		wp_enqueue_style( 'mexp-service-anvato', ANVATO_URL . 'mexp/style.css', array( 'mexp' ), '0.1' );
+	}
+
+	/**
+	 * Handles the AJAX request and returns an appropriate response. This should
+	 * be used, for example, to perform an API request to the service provider
+	 * and return the results.
+	 *
+	 * @param array $request The request parameters.
+	 * @return MEXP_Response|bool|WP_Error A MEXP_Response object should be
+	 *     returned on success, boolean false should be returned if there are no
+	 *     results to show, and a WP_Error should be returned if there is an
+	 *     error.
+	 */
+	public function request( array $request ) {
+		$params = array();
+		if ( ! empty( $request['params']['q'] ) ) {
+			$params['lk'] = sanitize_text_field( $request['params']['q'] );
+		}
+
+		$results = Anvato_Library()->search( $params );
+
+		if ( is_wp_error( $results ) ) {
+			return $results;
+		} elseif ( empty( $results ) ) {
+			return false;
+		}
+
+		$response = new MEXP_Response();
+		foreach( $results as $video ) {
+			$item = new MEXP_Response_Item();
+			$item->set_content( sanitize_text_field( $video->title->__toString() ) );
+			$item->set_date( strtotime( sanitize_text_field( $video->ts_added->__toString() ) ) );
+			$item->set_date_format( sprintf( __( '%s @ %s', 'anvato' ), get_option( 'date_format' ), get_option( 'time_format' ) ) );
+			$item->set_id( intval( $video->upload_id->__toString() ) );
+			$item->set_thumbnail( $video->src_image_url->__toString() );
+			$item->url = anvato_generate_shortcode( $video->upload_id->__toString() );
+
+			$response->add_item( $item );
+		}
+		return $response;
+	}
+
+	/**
+	 * Returns an array of tabs (routers) for the service's media manager panel.
+	 *
+	 * @param array $tabs Associative array of default tab items.
+	 * @return array Associative array of tabs. The key is the tab ID and the value is an array of tab attributes.
+	 */
+	public function tabs( array $tabs ) {
+		$tabs['anvato'] = array(
+			'all' => array(
+				'defaultTab' => true,
+				'text' => _x( 'All', 'Tab title', 'anvato' ),
+				'fetchOnRender' => true,
+			),
+		);
+
+		return $tabs;
+	}
+
+	/**
+	 * Returns an array of custom text labels for this service.
+	 *
+	 * @param array $labels Associative array of default labels.
+	 * @return array Associative array of labels.
+	 */
+	 public function labels( array $labels ) {
+	 	$labels['anvato'] = array(
+			'insert'    => __( 'Insert Video', 'anvato' ),
+			'noresults' => __( 'No videos matched your search query.', 'anvato' ),
+			'title'     => __( 'Insert Anvato Video', 'anvato' ),
+			'loadmore'  => __( 'Load more videos', 'anvato' ),
+		);
+
+	 	return $labels;
+	}
+
+}
