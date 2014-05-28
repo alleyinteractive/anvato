@@ -51,6 +51,7 @@ class Anvato_Settings {
 		add_settings_field( 'mcp_id', __( 'MCP ID:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'mcp_id' ) );
 		add_settings_field( 'station_id', __( 'Station ID:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'station_id' ) );
 		add_settings_field( 'player_url', __( 'Player URL:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'player_url' ) );
+		add_settings_field( 'tracker_id', __( 'Analytics Tracker ID:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'tracker_id' ) );
 		add_settings_field( 'adtag', __( 'Default Adtag:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'adtag' ) );
 		add_settings_field( 'width', __( 'Default Width:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'width' ) );
 		add_settings_field( 'height', __( 'Default Height:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'height' ) );
@@ -82,6 +83,7 @@ class Anvato_Settings {
 		$out['mcp_id']      = sanitize_text_field( $in['mcp_id'] );
 		$out['station_id']  = sanitize_text_field( $in['station_id'] );
 		$out['player_url']  = esc_url( $in['player_url'] );
+		$out['tracker_id']  = sanitize_text_field( $in['tracker_id'] );
 		$out['adtag']       = sanitize_text_field( $in['adtag'] );
 		$out['width']       = sanitize_text_field( $in['width'] );
 		$out['height']      = sanitize_text_field( $in['height'] );

@@ -35,6 +35,13 @@ function anvato_shortcode( $attr ) {
 		$json['plugins']['dfp'] = array( 'adTagUrl' => $attr['plugin_dfp_adtagurl'] );
 	}
 
+	# Set the Tracker ID, which can be overridden.
+	if ( ! isset( $attr['tracker_id'] ) && ! empty( $defaults['tracker_id'] ) ) {
+		$json['plugins']['analytics'] = array( 'pdb' => $defaults['tracker_id'] );
+	} elseif ( isset( $attr['tracker_id'] ) && $attr['tracker_id'] !== 'false' ) {
+		$json['plugins']['analytics'] = array( 'pdb' => $attr['tracker_id'] );
+	}
+
 	# Clean up attributes as need be
 	$json['autoplay'] = ( 'true' == $json['autoplay'] );
 
