@@ -64,7 +64,7 @@ class MEXP_Anvato_Template extends MEXP_Template {
 				value="{{ data.params.q }}"
 				class="mexp-input-text mexp-input-search"
 				size="40"
-				placeholder="<?php esc_attr_e( 'Search for anything!', 'mexp' ); ?>"
+				placeholder="<?php esc_attr_e( 'Search for videos', 'mexp' ); ?>"
 			>
 			<input class="button button-large" type="submit" value="<?php esc_attr_e( 'Search', 'mexp' ); ?>">
 
