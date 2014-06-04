@@ -36,7 +36,7 @@ class MEXP_Anvato_Service extends MEXP_Service {
 	 * Handles the AJAX request for videos and returns an appropriate response.
 	 *
 	 * @see  Anvato_Library->search() for documentation of request parameters
-	 *     and return values.
+	 *     and returned video data.
 	 *
 	 * @param array $request The request parameters.
 	 * @return MEXP_Response|bool|WP_Error A MEXP_Response object should be
