@@ -68,7 +68,13 @@ class MEXP_Anvato_Service extends MEXP_Service {
 			$item->set_thumbnail( $video->src_image_url->__toString() );
 			$item->url = anvato_generate_shortcode( $video->upload_id->__toString() );
 
-			$response->add_item( $item );
+			/**
+			 * Filter the video item to be added to the response.
+			 *
+			 * @param  MEXP_Response_Item $item The response item.
+			 * @param  SimpleXMLElement $video The XML for the video from the API.
+			 */
+			$response->add_item( apply_filters( 'anvato_mexp_response_item', $item, $video ) );
 		}
 		return $response;
 	}
