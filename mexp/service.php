@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Anvato service for Media Explorer.
  */
@@ -23,9 +22,9 @@ class MEXP_Anvato_Service extends MEXP_Service {
 	}
 
 	/**
-	 * Fired when the service is loaded.
+	 * Fired when the Anvato service is loaded.
 	 *
-	 * Allows the service to enqueue JS/CSS only when it's required. Akin to WordPress' load action.
+	 * Allows the service to enqueue JS/CSS only when it's required.
 	 */
 	public function load() {
 		add_filter( 'mexp_tabs',   array( $this, 'tabs' ),   10, 1 );
@@ -34,9 +33,10 @@ class MEXP_Anvato_Service extends MEXP_Service {
 	}
 
 	/**
-	 * Handles the AJAX request and returns an appropriate response. This should
-	 * be used, for example, to perform an API request to the service provider
-	 * and return the results.
+	 * Handles the AJAX request for videos and returns an appropriate response.
+	 *
+	 * @see  Anvato_Library->search() for documentation of request parameters
+	 *     and return values.
 	 *
 	 * @param array $request The request parameters.
 	 * @return MEXP_Response|bool|WP_Error A MEXP_Response object should be
@@ -74,7 +74,7 @@ class MEXP_Anvato_Service extends MEXP_Service {
 	}
 
 	/**
-	 * Returns an array of tabs (routers) for the service's media manager panel.
+	 * Returns an array of tabs for the Anvato service's media manager panel.
 	 *
 	 * @param array $tabs Associative array of default tab items.
 	 * @return array Associative array of tabs. The key is the tab ID and the value is an array of tab attributes.
@@ -92,7 +92,7 @@ class MEXP_Anvato_Service extends MEXP_Service {
 	}
 
 	/**
-	 * Returns an array of custom text labels for this service.
+	 * Returns an array of custom text labels for the Anvato service.
 	 *
 	 * @param array $labels Associative array of default labels.
 	 * @return array Associative array of labels.

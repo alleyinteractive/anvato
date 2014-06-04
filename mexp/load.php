@@ -8,9 +8,7 @@
 /**
  * Load the files required for Media Explorer integration.
  *
- * @see  MEXP_Anvato_Service, which @uses anvato_generate_shortcode().
- *
- * @return void.
+ * @see  MEXP_Anvato_Service, which uses anvato_generate_shortcode().
  */
 function anvato_require_mexp_files() {
 	require_once ANVATO_PATH . '/lib/shortcode.php';
@@ -33,8 +31,6 @@ add_filter( 'mexp_services', 'mexp_service_anvato' );
 
 /**
  * Tell users with privileges about the Media Explorer plugin if it's missing.
- *
- * @return void.
  */
 function anvato_add_mexp_notice() {
 	if ( ! class_exists( 'MEXP_Service' ) && current_user_can( 'install_plugins' ) ) {
@@ -45,8 +41,6 @@ add_action( 'load-settings_page_anvato', 'anvato_add_mexp_notice', 10, 1 );
 
 /**
  * Display the notice about the Media Explorer plugin.
- *
- * @return void.
  */
 function anvato_mexp_nag() {
 	?>

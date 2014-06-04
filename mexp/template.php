@@ -1,5 +1,4 @@
- <?php
-
+<?php
 /**
  * Backbone templates for various views for the Anvato service.
  */

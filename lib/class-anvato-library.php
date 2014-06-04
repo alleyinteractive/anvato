@@ -166,7 +166,7 @@ class Anvato_Library {
 	/**
 	 * Request data from the Anvato API.
 	 *
-	 * @uses  vip_safe_wp_remote_get If available.
+	 * @uses  vip_safe_wp_remote_get() if available.
 	 * @see  $this->build_request_parameters() for allowed search parameters.
 	 *
 	 * @param array $params Search parameters.
