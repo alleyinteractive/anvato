@@ -54,6 +54,9 @@ class Anvato_Settings {
 		add_settings_field( 'player_url', __( 'Player URL:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'player_url' ) );
 		add_settings_field( 'tracker_id', __( 'Analytics Tracker ID:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'tracker_id' ) );
 		add_settings_field( 'adtag', __( 'Default Adtag:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'adtag' ) );
+		add_settings_field( 'adobe_profile', __( 'Adobe Analytics Profile:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'adobe_profile' ) );
+		add_settings_field( 'adobe_account', __( 'Adobe Analytics Account:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'adobe_account' ) );
+		add_settings_field( 'adobe_trackingserver:', __( 'Adobe Analytics Tracking Server:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'adobe_trackingserver' ) );
 		add_settings_field( 'width', __( 'Default Width:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'width' ) );
 		add_settings_field( 'height', __( 'Default Height:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'height' ) );
 		add_settings_field( 'public_key', __( 'Public Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'public_key' ) );
@@ -80,17 +83,21 @@ class Anvato_Settings {
 		# Validate data
 		$out = array();
 
-		$out['mcp_url']     = sanitize_text_field( $in['mcp_url'] );
-		$out['mcp_id']      = sanitize_text_field( $in['mcp_id'] );
-		$out['profile']     = sanitize_text_field( $in['profile'] );
-		$out['station_id']  = sanitize_text_field( $in['station_id'] );
-		$out['player_url']  = esc_url( $in['player_url'] );
-		$out['tracker_id']  = sanitize_text_field( $in['tracker_id'] );
-		$out['adtag']       = sanitize_text_field( $in['adtag'] );
-		$out['width']       = sanitize_text_field( $in['width'] );
-		$out['height']      = sanitize_text_field( $in['height'] );
-		$out['public_key']  = sanitize_text_field( $in['public_key'] );
-		$out['private_key'] = sanitize_text_field( $in['private_key'] );
+		$out['mcp_url']              = sanitize_text_field( $in['mcp_url'] );
+		$out['mcp_id']               = sanitize_text_field( $in['mcp_id'] );
+		$out['profile']              = sanitize_text_field( $in['profile'] );
+		$out['station_id']           = sanitize_text_field( $in['station_id'] );
+		$out['player_url']           = esc_url( $in['player_url'] );
+		$out['tracker_id']           = sanitize_text_field( $in['tracker_id'] );
+		$out['adtag']                = sanitize_text_field( $in['adtag'] );
+		$out['adobe_profile']        = sanitize_text_field( $in['adobe_profile'] );
+		$out['adobe_account']        = sanitize_text_field( $in['adobe_account'] );
+		// Not stored as a full URL.
+		$out['adobe_trackingserver'] = sanitize_text_field( $in['adobe_trackingserver'] );
+		$out['width']                = sanitize_text_field( $in['width'] );
+		$out['height']               = sanitize_text_field( $in['height'] );
+		$out['public_key']           = sanitize_text_field( $in['public_key'] );
+		$out['private_key']          = sanitize_text_field( $in['private_key'] );
 
 		return $out;
 	}
