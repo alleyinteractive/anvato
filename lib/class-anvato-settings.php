@@ -49,6 +49,7 @@ class Anvato_Settings {
 		add_settings_section( 'general', false, '__return_false', self::SLUG );
 		add_settings_field( 'mcp_url', __( 'MCP URL:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'mcp_url' ) );
 		add_settings_field( 'mcp_id', __( 'MCP ID:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'mcp_id' ) );
+		add_settings_field( 'profile', __( 'Profile:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'profile' ) );
 		add_settings_field( 'station_id', __( 'Station ID:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'station_id' ) );
 		add_settings_field( 'player_url', __( 'Player URL:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'player_url' ) );
 		add_settings_field( 'tracker_id', __( 'Analytics Tracker ID:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'tracker_id' ) );
@@ -81,6 +82,7 @@ class Anvato_Settings {
 
 		$out['mcp_url']     = sanitize_text_field( $in['mcp_url'] );
 		$out['mcp_id']      = sanitize_text_field( $in['mcp_id'] );
+		$out['profile']     = sanitize_text_field( $in['profile'] );
 		$out['station_id']  = sanitize_text_field( $in['station_id'] );
 		$out['player_url']  = esc_url( $in['player_url'] );
 		$out['tracker_id']  = sanitize_text_field( $in['tracker_id'] );

@@ -15,6 +15,7 @@ function anvato_shortcode( $attr ) {
 	# Set the attributes which the shortcode can override
 	$json = shortcode_atts( array(
 		'mcp'        => $defaults['mcp_id'],
+		'profile'    => $defaults['profile'],
 		'station_id' => $defaults['station_id'],
 		'width'      => $defaults['width'],
 		'height'     => $defaults['height'],
