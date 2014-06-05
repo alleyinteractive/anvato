@@ -13,13 +13,18 @@ A WordPress Plugin for integrating the Anvato video player.
 
 * `video`
 * `autoplay`
+* `adobe_analytics` (accepts only `false`, which removes all Adobe settings from the output)
 
-### Available attributes that override default settings
+#### Available attributes that override default settings
 
 * `mcp`
 * `station_id`
+* `profile`
 * `width`
 * `height`
 * `player_url`
 * `plugin_dfp_adtagurl` (also accepts `false`, which removes it from the output)
 * `tracker_id` (also accepts `false`, which removes it from the output)
+* `adobe_profile` (also accepts `false`, which removes it from the output)
+* `adobe_account` (also accepts `false`, which removes it from the output)
+* `adobe_trackingserver` (also accepts `false`, which removes it from the output)
