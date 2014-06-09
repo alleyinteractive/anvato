@@ -15,6 +15,7 @@ function anvato_shortcode( $attr ) {
 	# Set the attributes which the shortcode can override
 	$json = shortcode_atts( array(
 		'mcp'        => $defaults['mcp_id'],
+		'profile'    => $defaults['profile'],
 		'station_id' => $defaults['station_id'],
 		'width'      => $defaults['width'],
 		'height'     => $defaults['height'],
@@ -33,6 +34,34 @@ function anvato_shortcode( $attr ) {
 		$json['plugins']['dfp'] = array( 'adTagUrl' => $defaults['adtag'] );
 	} elseif ( ! empty( $attr['plugin_dfp_adtagurl'] ) && $attr['plugin_dfp_adtagurl'] !== 'false' ) {
 		$json['plugins']['dfp'] = array( 'adTagUrl' => $attr['plugin_dfp_adtagurl'] );
+	}
+
+	# Set the Tracker ID, which can be overridden
+	if ( ! isset( $attr['tracker_id'] ) && ! empty( $defaults['tracker_id'] ) ) {
+		$json['plugins']['analytics'] = array( 'pdb' => $defaults['tracker_id'] );
+	} elseif ( isset( $attr['tracker_id'] ) && $attr['tracker_id'] !== 'false' ) {
+		$json['plugins']['analytics'] = array( 'pdb' => $attr['tracker_id'] );
+	}
+
+	# Set the Adobe Analytics information, which can be overridden or canceled
+	if ( ! isset( $attr['adobe_analytics'] ) || ( isset( $attr['adobe_analytics'] ) && 'false' != $attr['adobe_analytics'] ) ) {
+		if ( ! isset( $attr['adobe_profile'] ) && ! empty( $defaults['adobe_profile'] ) ) {
+			$json['plugins']['omniture']['profile'] = $defaults['adobe_profile'];
+		} elseif ( isset( $attr['adobe_profile'] ) && $attr['adobe_profile'] !== 'false' ) {
+			$json['plugins']['omniture']['profile'] = $attr['adobe_profile'];
+		}
+
+		if ( ! isset( $attr['adobe_account'] ) && ! empty( $defaults['adobe_account'] ) ) {
+			$json['plugins']['omniture']['account'] = $defaults['adobe_account'];
+		} elseif ( isset( $attr['adobe_account'] ) && $attr['adobe_account'] !== 'false' ) {
+			$json['plugins']['omniture']['account'] = $attr['adobe_account'];
+		}
+
+		if ( ! isset( $attr['adobe_trackingserver'] ) && ! empty( $defaults['adobe_trackingserver'] ) ) {
+			$json['plugins']['omniture']['trackingServer'] = $defaults['adobe_trackingserver'];
+		} elseif ( isset( $attr['adobe_trackingserver'] ) && $attr['adobe_trackingserver'] !== 'false' ) {
+			$json['plugins']['omniture']['trackingServer'] = $attr['adobe_trackingserver'];
+		}
 	}
 
 	# Clean up attributes as need be
