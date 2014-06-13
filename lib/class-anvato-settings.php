@@ -87,7 +87,7 @@ class Anvato_Settings {
 		$out['mcp_id']               = sanitize_text_field( $in['mcp_id'] );
 		$out['profile']              = sanitize_text_field( $in['profile'] );
 		$out['station_id']           = sanitize_text_field( $in['station_id'] );
-		$out['player_url']           = esc_url( $in['player_url'] );
+		$out['player_url']           = esc_url_raw( $in['player_url'] );
 		$out['tracker_id']           = sanitize_text_field( $in['tracker_id'] );
 		$out['adtag']                = sanitize_text_field( $in['adtag'] );
 		$out['adobe_profile']        = sanitize_text_field( $in['adobe_profile'] );
