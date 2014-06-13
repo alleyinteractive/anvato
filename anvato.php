@@ -26,6 +26,8 @@ define( 'ANVATO_PATH', dirname( __FILE__ ) );
 define( 'ANVATO_URL', trailingslashit( plugins_url( '', __FILE__ ) ) );
 
 require_once ANVATO_PATH . '/lib/class-anvato-settings.php';
+require_once ANVATO_PATH . '/lib/class-anvato-library.php';
+require_once ANVATO_PATH . '/mexp/load.php';
 
 if ( ! is_admin() ) {
 	require_once ANVATO_PATH . '/lib/shortcode.php';

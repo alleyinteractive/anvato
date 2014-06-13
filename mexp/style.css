@@ -1,0 +1,17 @@
+.mexp-content-anvato .attachment {
+	width: 200px;
+	height: 200px;
+}
+
+.mexp-content-anvato .attachment .selected {
+	border-color: #999;
+}
+
+.mexp-content-anvato .mexp-item-content {
+	font-weight: bold;
+}
+
+/* "Load more" not yet supported. */
+#anvato-loadmore {
+	display: none !important;
+}
