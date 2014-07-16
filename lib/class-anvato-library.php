@@ -156,10 +156,10 @@ class Anvato_Library {
 	private function get_api_error( $response ) {
 		$xml = simplexml_load_string( wp_remote_retrieve_body( $response ) );
 		if ( is_object( $xml ) && ! empty( $xml->comment ) ) {
-			return sprintf( __( '"%s"', 'anvato' ), esc_html( $xml->comment ) );
+			return sprintf( esc_html__( '"%s"', 'anvato' ), esc_html( $xml->comment ) );
 		} else {
 			// Intentionally uncapitalized.
-			return __( 'no error message provided', 'anvato' );
+			return esc_html__( 'no error message provided', 'anvato' );
 		}
 	}
 
@@ -174,7 +174,7 @@ class Anvato_Library {
 	 */
 	private function request( $params ) {
 		if ( ! $this->has_required_settings() ) {
-			return new WP_Error( 'missing_required_settings', __( 'The MCP URL, Public Key, and Private Key settings are required.', 'anvato' ) );
+			return new WP_Error( 'missing_required_settings', esc_html__( 'The MCP URL, Public Key, and Private Key settings are required.', 'anvato' ) );
 		}
 
 		$url = $this->build_request_url( $params, time() );
@@ -189,12 +189,12 @@ class Anvato_Library {
 			return $response;
 		} elseif ( wp_remote_retrieve_response_code( $response ) === 200 ) {
 			if ( $this->is_api_error( $response ) ) {
-				return new WP_Error( 'api_error', sprintf( __( 'Anvato responded with an error (%s).', 'anvato' ), $this->get_api_error( $response ) ) );
+				return new WP_Error( 'api_error', sprintf( esc_html__( 'Anvato responded with an error (%s).', 'anvato' ), $this->get_api_error( $response ) ) );
 			} else {
 				return $response;
 			}
 		} else {
-			return new WP_Error( 'request_unsuccessful', __( 'There was an error contacting Anvato.', 'anvato' ) );
+			return new WP_Error( 'request_unsuccessful', esc_html__( 'There was an error contacting Anvato.', 'anvato' ) );
 		}
 	}
 
@@ -220,7 +220,7 @@ class Anvato_Library {
 			if ( is_object( $xml ) ) {
 				return $xml->params->video_list->xpath( '//video' );
 			} else {
-				return new WP_Error( 'parse_error', __( 'There was an error processing the search results.', 'anvato' ) );
+				return new WP_Error( 'parse_error', esc_html__( 'There was an error processing the search results.', 'anvato' ) );
 			}
 		}
 	}
