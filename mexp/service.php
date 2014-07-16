@@ -63,7 +63,7 @@ class MEXP_Anvato_Service extends MEXP_Service {
 			$item = new MEXP_Response_Item();
 			$item->set_content( sanitize_text_field( $video->title->__toString() ) );
 			$item->set_date( strtotime( sanitize_text_field( $video->ts_added->__toString() ) ) );
-			$item->set_date_format( sprintf( __( '%s @ %s', 'anvato' ), get_option( 'date_format' ), get_option( 'time_format' ) ) );
+			$item->set_date_format( sprintf( esc_html__( '%s @ %s', 'anvato' ), get_option( 'date_format' ), get_option( 'time_format' ) ) );
 			$item->set_id( intval( $video->upload_id->__toString() ) );
 			$item->set_thumbnail( $video->src_image_url->__toString() );
 			$item->url = anvato_generate_shortcode( $video->upload_id->__toString() );
@@ -105,10 +105,10 @@ class MEXP_Anvato_Service extends MEXP_Service {
 	 */
 	 public function labels( array $labels ) {
 	 	$labels['anvato'] = array(
-			'insert'    => __( 'Insert Video', 'anvato' ),
-			'noresults' => __( 'No videos matched your search query.', 'anvato' ),
-			'title'     => __( 'Insert Anvato Video', 'anvato' ),
-			'loadmore'  => __( 'Load more videos', 'anvato' ),
+			'insert'    => esc_html__( 'Insert Video', 'anvato' ),
+			'noresults' => esc_html__( 'No videos matched your search query.', 'anvato' ),
+			'title'     => esc_html__( 'Insert Anvato Video', 'anvato' ),
+			'loadmore'  => esc_html__( 'Load more videos', 'anvato' ),
 		);
 
 	 	return $labels;
