@@ -5,26 +5,12 @@ A WordPress Plugin for integrating the Anvato video player.
 
 # Shortcode
 
-## Basic shortcode usage
+Basic usage: `[anvplayer video="282411"]`
 
-`[anvplayer video="282411"]`
+Consult the documentation in `lib/shortcode.php` for available shortcode attributes.
 
-### Available shortcode attributes
+# Media Explorer
 
-* `video`
-* `autoplay`
-* `adobe_analytics` (accepts only `false`, which removes all Adobe settings from the output)
+!["Media Library with Anvato option"](./img/mexp-screenshot.jpg)
 
-#### Available attributes that override default settings
-
-* `mcp`
-* `station_id`
-* `profile`
-* `width`
-* `height`
-* `player_url`
-* `plugin_dfp_adtagurl` (also accepts `false`, which removes it from the output)
-* `tracker_id` (also accepts `false`, which removes it from the output)
-* `adobe_profile` (also accepts `false`, which removes it from the output)
-* `adobe_account` (also accepts `false`, which removes it from the output)
-* `adobe_trackingserver` (also accepts `false`, which removes it from the output)
+Install the [Media Explorer plugin](https://github.com/Automattic/media-explorer) to search for videos and insert Anvato shortcodes directly from the Media Library. Make sure the "MCP URL," "Public Key," and "Private Key" fields are filled in on the plugin settings page.
