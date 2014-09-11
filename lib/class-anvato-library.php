@@ -180,7 +180,7 @@ class Anvato_Library {
 		$url = $this->build_request_url( $params, time() );
 		$args = array( 'body' => $this->xml_body );
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
-			$response = vip_safe_wp_remote_get( $url, false, 3, 1, 20, $args );
+			$response = vip_safe_wp_remote_get( $url, false, 3, 2, 20, $args );
 		} else {
 			$response = wp_remote_get( $url, $args );
 		}
