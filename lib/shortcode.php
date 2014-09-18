@@ -10,7 +10,10 @@ $anvato_player_data = array();
  *     Array of shortcode attributes.
  *
  *     @type  string      $video                The Anvato video ID
+ *     @type  string      $playlist             The Anvato playlist ID. If both $playlist and
+ *                                              $video are present, $playlist takes precedence.
  *     @type  bool        $autoplay             Optional. Autoplay the video? Default false.
+ *     @type  int         $seek_to              Optional. Start the video N seconds in.
  *     @type  bool        $adobe_analytics      Optional. Accepts false to remove all Adobe
  *                                              settings from the output.
  *     @type  string      $mcp                  Optional. Override the "mcp" setting.
@@ -44,7 +47,7 @@ function anvato_shortcode( $attr ) {
 		'width'      => $defaults['width'],
 		'height'     => $defaults['height'],
 		'video'      => null,
-		'playlist'   => null, # Will take precedence over 'video'
+		'playlist'   => null,
 		'autoplay'   => false,
 	), $attr, 'anvplayer' );
 
