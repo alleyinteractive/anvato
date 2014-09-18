@@ -14,6 +14,7 @@ A WordPress Plugin for integrating the Anvato video player.
 * `video`
 * `autoplay`
 * `adobe_analytics` (accepts only `false`, which removes all Adobe settings from the output)
+* `seek_to` (in seconds)
 
 #### Available attributes that override default settings
 

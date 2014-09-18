@@ -42,7 +42,7 @@ function anvato_register_scripts() {
 add_action( 'wp_enqueue_scripts', 'anvato_register_scripts' );
 
 /**
- * Enqueue the player-specific Javascript if data to localize to it exist.
+ * If player-specific data are available for Javascript, localize them.
  *
  * This function should not be called until you're confident that no additional
  * shortcode instances will be encountered.

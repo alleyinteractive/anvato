@@ -1,6 +1,9 @@
 /**
  * Respond to events emitted by Anvato player instances.
  *
+ * Data to use for individual player instances should live under a property of
+ * the instance ID: "anvatoPlayerData['p0'][...]".
+ *
  * @see http://docs.anvato.com/universal-player-api/api-events/.
  */
 anvp.setListener( function( e ) {
