@@ -54,4 +54,5 @@ function anvato_localize_player_data() {
 		wp_localize_script( 'anvato', 'anvatoPlayerData', $anvato_player_data );
 	}
 }
-add_action( 'wp_print_footer_scripts', 'anvato_localize_player_data', 9 );
+// @see default-filters.php. Added before _wp_footer_scripts().
+add_action( 'wp_print_footer_scripts', 'anvato_localize_player_data', 8 );
