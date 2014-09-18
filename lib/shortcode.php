@@ -67,7 +67,7 @@ function anvato_shortcode( $attr ) {
 
 	# Include the "seek to" time in this instance's localized data.
 	if ( isset( $attr['seek_to'] ) && is_numeric( $attr['seek_to'] ) ) {
-		$anvato_player_data[ $json['pInstance'] ]['seekTo'] = absint( $attr['seek_to'] * 1000 );
+		$anvato_player_data[ $json['pInstance'] ]['seekTo'] = absint( $attr['seek_to'] ) * 1000;
 	}
 
 	# Clean up attributes as need be
