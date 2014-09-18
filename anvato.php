@@ -32,3 +32,26 @@ require_once ANVATO_PATH . '/mexp/load.php';
 if ( ! is_admin() ) {
 	require_once ANVATO_PATH . '/lib/shortcode.php';
 }
+
+/**
+ * Register Javascripts for the frontend.
+ */
+function anvato_register_scripts() {
+	wp_register_script( 'anvato', ANVATO_URL . 'js/public.js', array(), '0.1', true );
+}
+add_action( 'wp_enqueue_scripts', 'anvato_register_scripts' );
+
+/**
+ * Enqueue the player-specific Javascript if data to localize to it exist.
+ *
+ * This function should not be called until you're confident that no additional
+ * shortcode instances will be encountered.
+ */
+function anvato_localize_player_data() {
+	global $anvato_player_data;
+	if ( ! empty( $anvato_player_data ) ) {
+		wp_enqueue_script( 'anvato' );
+		wp_localize_script( 'anvato', 'anvatoPlayerData', $anvato_player_data );
+	}
+}
+add_action( 'wp_print_footer_scripts', 'anvato_localize_player_data', 9 );
