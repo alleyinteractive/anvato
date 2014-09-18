@@ -20,7 +20,8 @@ function anvato_shortcode( $attr ) {
 		'width'      => $defaults['width'],
 		'height'     => $defaults['height'],
 		'video'      => null,
-		'autoplay'   => false
+		'playlist'   => null, # Will take precedence over 'video'
+		'autoplay'   => false,
 	), $attr, 'anvplayer' );
 
 	# Set other attributes that can't be overridden
