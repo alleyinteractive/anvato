@@ -103,15 +103,15 @@ class MEXP_Anvato_Service extends MEXP_Service {
 	 * @param array $labels Associative array of default labels.
 	 * @return array Associative array of labels.
 	 */
-	 public function labels( array $labels ) {
-	 	$labels['anvato'] = array(
+	public function labels( array $labels ) {
+		$labels['anvato'] = array(
 			'insert'    => __( 'Insert Video', 'anvato' ),
 			'noresults' => __( 'No videos matched your search query.', 'anvato' ),
 			'title'     => __( 'Insert Anvato Video', 'anvato' ),
 			'loadmore'  => __( 'Load more videos', 'anvato' ),
 		);
 
-	 	return $labels;
+		return $labels;
 	}
 
 }
