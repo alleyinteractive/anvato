@@ -12,6 +12,7 @@ A WordPress Plugin for integrating the Anvato video player.
 ### Available shortcode attributes
 
 * `video`
+* `playlist` (takes precedence over `video` if both are present)
 * `autoplay`
 * `adobe_analytics` (accepts only `false`, which removes all Adobe settings from the output)
 
