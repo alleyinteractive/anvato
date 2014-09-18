@@ -1,6 +1,7 @@
 <?php
-global $anvato_player_index;
+global $anvato_player_index, $anvato_player_data;
 $anvato_player_index = 0;
+$anvato_player_data = array();
 
 /**
  * Implement the Anvato shortcode.
@@ -9,7 +10,7 @@ $anvato_player_index = 0;
  * @return string       HTML to replace the shortcode
  */
 function anvato_shortcode( $attr ) {
-	global $anvato_player_index;
+	global $anvato_player_index, $anvato_player_data;
 	$defaults = Anvato_Settings()->get_options();
 
 	# Set the attributes which the shortcode can override
@@ -63,6 +64,11 @@ function anvato_shortcode( $attr ) {
 		} elseif ( isset( $attr['adobe_trackingserver'] ) && 'false' !== $attr['adobe_trackingserver'] ) {
 			$json['plugins']['omniture']['trackingServer'] = $attr['adobe_trackingserver'];
 		}
+	}
+
+	# Include the "seek to" time in this instance's localized data.
+	if ( isset( $attr['seek_to'] ) && is_numeric( $attr['seek_to'] ) ) {
+		$anvato_player_data[ $json['pInstance'] ]['seekTo'] = absint( $attr['seek_to'] ) * 1000;
 	}
 
 	# Clean up attributes as need be
