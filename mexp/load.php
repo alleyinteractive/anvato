@@ -45,7 +45,16 @@ add_action( 'load-settings_page_anvato', 'anvato_add_mexp_notice', 10, 1 );
 function anvato_mexp_nag() {
 	?>
 	<div class="update-nag">
-	    <p><?php _e( '<strong>Even easier embedding</strong>: You can search for Anvato videos and add shortcodes directly from the Add Media screen by installing the <a href="https://github.com/Automattic/media-explorer/">Media Explorer plugin</a>.', 'anvato' ); ?></p>
+		<p>
+			<?php
+				printf( esc_html__( '%sEven easier embedding%s: You can search for Anvato videos and add shortcodes directly from the Add Media screen by installing the %sMedia Explorer plugin%s.', 'anvato' ),
+					'<strong>',
+					'</strong>',
+					'<a href="https://github.com/Automattic/media-explorer/">',
+					'</a>'
+				);
+			?>
+		</p>
 	</div>
 	<?php
 }
