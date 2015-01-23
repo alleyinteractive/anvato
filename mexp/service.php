@@ -35,7 +35,7 @@ class MEXP_Anvato_Service extends MEXP_Service {
 	/**
 	 * Handles the AJAX request for videos and returns an appropriate response.
 	 *
-	 * @see  Anvato_Library->search() for documentation of request parameters
+	 * @see  Anvato_Library::search() for documentation of request parameters
 	 *     and returned video data.
 	 *
 	 * @param array $request The request parameters.
@@ -58,8 +58,20 @@ class MEXP_Anvato_Service extends MEXP_Service {
 			return false;
 		}
 
+		/**
+		 * Filter the raw search results from the Anvato library.
+		 *
+		 * @param array $results Array with SimpleXMLElements of videos.
+		 * @param array $params Search parameters. {@see Anvato_Library::search()}.
+		 */
+		$results = apply_filters( 'anvato_mexp_request_results', $results, $params );
+
+		if ( isset( $request['params']['max_results'] ) && 0 !== absint( $request['params']['max_results'] ) ) {
+			$results = array_slice( $results, 0, absint( $request['params']['max_results'] ), true );
+		}
+
 		$response = new MEXP_Response();
-		foreach( $results as $video ) {
+		foreach ( $results as $video ) {
 			$item = new MEXP_Response_Item();
 			$item->set_content( sanitize_text_field( $video->title->__toString() ) );
 			$item->set_date( strtotime( sanitize_text_field( $video->ts_added->__toString() ) ) );
