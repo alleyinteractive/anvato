@@ -30,7 +30,7 @@ class MEXP_Anvato_Template extends MEXP_Template {
 			</div>
 		</div>
 
-		<a href="#" id="mexp-check-{{ data.id }}" data-id="{{ data.id }}" class="check" title="<?php esc_attr_e( 'Deselect', 'mexp' ); ?>">
+		<a href="#" id="mexp-check-{{ data.id }}" data-id="{{ data.id }}" class="check" title="<?php esc_attr_e( 'Deselect', 'anvato' ); ?>">
 			<div class="media-modal-icon"></div>
 		</a>
 	<?php
@@ -58,16 +58,25 @@ class MEXP_Anvato_Template extends MEXP_Template {
 	public function search( $id, $tab ) {
 	?>
 		<form action="#" class="mexp-toolbar-container clearfix tab-all">
+			<label for="anvato-search-input" class="screen-reader-text"><?php esc_html_e( 'Search for videos', 'anvato' ); ?></label>
 			<input
+				id="anvato-search-input"
 				type="text"
 				name="q"
 				value="{{ data.params.q }}"
 				class="mexp-input-text mexp-input-search"
 				size="40"
-				placeholder="<?php esc_attr_e( 'Search for videos', 'mexp' ); ?>"
+				placeholder="<?php esc_attr_e( 'Search for videos', 'anvato' ); ?>"
 			>
-			<input class="button button-large" type="submit" value="<?php esc_attr_e( 'Search', 'mexp' ); ?>">
 
+			<label for="anvato-max-results-input" class="screen-reader-text"><?php esc_html_e( 'Filter maximum number of results', 'anvato' ); ?></label>
+			<select id="anvato-max-results-input" name="max_results" class="mexp-input-text mexp-input-select">
+				<?php foreach ( array( 50, 25, 10, 5 ) as $num ) : ?>
+					<option value="<?php echo absint( $num ) ?>"><?php echo esc_html( sprintf( __( 'Up to %d results', 'anvato' ), $num ) ); ?></option>
+				<?php endforeach; ?>
+			</select>
+
+			<input class="button button-large" type="submit" value="<?php esc_attr_e( 'Search', 'anvato' ); ?>">
 			<div class="spinner"></div>
 		</form>
 	<?php
