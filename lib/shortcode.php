@@ -6,8 +6,34 @@ $anvato_player_data = array();
 /**
  * Implement the Anvato shortcode.
  *
- * @param  array $attr Array of shortcode attributes
- * @return string       HTML to replace the shortcode
+ * @param  array $attr {
+ *     Array of shortcode attributes.
+ *
+ *     @type  string      $video                The Anvato video ID.
+ *     @type  string      $playlist             The Anvato playlist ID. If both $playlist and
+ *                                              $video are present, $playlist takes precedence.
+ *     @type  bool        $autoplay             Optional. Autoplay the video? Default false.
+ *     @type  int         $seek_to              Optional. Start the video N seconds in.
+ *     @type  bool        $adobe_analytics      Optional. Accepts false to remove all Adobe
+ *                                              settings from the output.
+ *     @type  string      $mcp                  Optional. Override the "mcp" setting.
+ *     @type  string      $station_id           Optional. Override the "station_id" setting.
+ *     @type  string      $profile              Optional. Override the "profile" setting.
+ *     @type  string      $width                Optional. Override the player "width" setting.
+ *     @type  string      $height               Optional. Override the player "height" setting.
+ *     @type  string      $player_url           Optional. Override the "player_url" setting.
+ *     @type  string|bool $plugin_dfp_adtagurl  Optional. Override the "plugin_dfp_adtagurl" setting,
+ *                                              or use false to remove it from the output.
+ *     @type  string|bool $tracker_id           Optional. Override the "tracker_id" setting, or use
+ *                                              false to remove it from the output.
+ *     @type  string|bool $adobe_profile        Optional. Override the "adobe_profile" setting, or use
+ *                                              false to remove it from the output.
+ *     @type  string|bool $adobe_account        Optional. Override the "adobe_account" setting, or use
+ *                                              false to remove it from the output.
+ *     @type  string|bool $adobe_trackingserver Optional. Override the "adobe_trackingserver" setting,
+ *                                              or use false to remove it from the output.
+ * }
+ * @return string       HTML to replace the shortcode.
  */
 function anvato_shortcode( $attr ) {
 	global $anvato_player_index, $anvato_player_data;
@@ -21,7 +47,7 @@ function anvato_shortcode( $attr ) {
 		'width'      => $defaults['width'],
 		'height'     => $defaults['height'],
 		'video'      => null,
-		'playlist'   => null, # Will take precedence over 'video'
+		'playlist'   => null,
 		'autoplay'   => false,
 	), $attr, 'anvplayer' );
 
