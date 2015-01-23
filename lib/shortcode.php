@@ -9,7 +9,7 @@ $anvato_player_data = array();
  * @param  array $attr {
  *     Array of shortcode attributes.
  *
- *     @type  string      $video                The Anvato video ID
+ *     @type  string      $video                The Anvato video ID.
  *     @type  string      $playlist             The Anvato playlist ID. If both $playlist and
  *                                              $video are present, $playlist takes precedence.
  *     @type  bool        $autoplay             Optional. Autoplay the video? Default false.
@@ -33,7 +33,7 @@ $anvato_player_data = array();
  *     @type  string|bool $adobe_trackingserver Optional. Override the "adobe_trackingserver" setting,
  *                                              or use false to remove it from the output.
  * }
- * @return string       HTML to replace the shortcode
+ * @return string       HTML to replace the shortcode.
  */
 function anvato_shortcode( $attr ) {
 	global $anvato_player_index, $anvato_player_data;
