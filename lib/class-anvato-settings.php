@@ -4,7 +4,7 @@
  * Anvato Settings
  */
 
-if ( !class_exists( 'Anvato_Settings' ) ) :
+if ( ! class_exists( 'Anvato_Settings' ) ) :
 
 class Anvato_Settings {
 
@@ -59,8 +59,8 @@ class Anvato_Settings {
 		add_settings_field( 'adobe_trackingserver', __( 'Adobe Analytics Tracking Server:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'adobe_trackingserver' ) );
 		add_settings_field( 'width', __( 'Default Width:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'width' ) );
 		add_settings_field( 'height', __( 'Default Height:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'height' ) );
-		add_settings_field( 'public_key', __( 'Public Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'public_key' ) );
-		add_settings_field( 'private_key', __( 'Private Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'private_key', 'type' => 'password' ) );
+		add_settings_field( 'public_key', __( 'Station Public Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'public_key' ) );
+		add_settings_field( 'private_key', __( 'Station Private Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'private_key', 'type' => 'password' ) );
 	}
 
 	public function action_admin_menu() {
@@ -69,7 +69,7 @@ class Anvato_Settings {
 
 	public function field( $args ) {
 		$args = wp_parse_args( $args, array(
-			'type' => 'text'
+			'type' => 'text',
 		) );
 
 		if ( empty( $args['field'] ) ) {
@@ -80,8 +80,16 @@ class Anvato_Settings {
 	}
 
 	public function sanitize_options( $in ) {
-		# Validate data
-		$out = array();
+		/**
+		 * Anvato Sanitized Options
+		 *
+		 * Modify the options that are saved by Anvato. The default options
+		 * cannot be overwritten.
+		 *
+		 * @var $options array Options to be sanitized and saved
+		 * @return array
+		 */
+		$out = (array) apply_filters( 'anvato_settings_sanitize_options', array(), $in );
 
 		$out['mcp_url']              = sanitize_text_field( $in['mcp_url'] );
 		$out['mcp_id']               = sanitize_text_field( $in['mcp_id'] );
@@ -114,7 +122,6 @@ class Anvato_Settings {
 	</div>
 	<?php
 	}
-
 }
 
 function Anvato_Settings() {

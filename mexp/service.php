@@ -50,6 +50,13 @@ class MEXP_Anvato_Service extends MEXP_Service {
 			$params['lk'] = sanitize_text_field( $request['params']['q'] );
 		}
 
+		/**
+		 * Handle the search parameters passed to {@see Anvato_Library::search()}.
+		 *
+		 * @param array $params Search parameters. {@see Anvato_Library::search()}.
+		 */
+		apply_filters( 'anvato_search_params', $params, $this, $request );
+
 		$results = Anvato_Library()->search( $params );
 
 		if ( is_wp_error( $results ) ) {
