@@ -59,10 +59,33 @@ class Anvato_Library {
 	 * @return object.
 	 */
 	public static function get_instance() {
-		if ( null == self::$instance ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self;
 		}
 		return self::$instance;
+	}
+
+	/**
+	 * Retrieve a stored option value
+	 *
+	 * @param string $key The key of the option to retrieve
+	 * @return string
+	 */
+	public function get_option( $key ) {
+		$value = ( ! empty( $this->option_values[ $key ] ) ) ? $this->option_values[ $key ] : null;
+
+		/**
+		 * Modify the Anvato option value
+		 *
+		 * Filter the value of the Anvato option. The dynamic portion of the hook name,
+		 * `$key`, refers to the key of the option that is being requested.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param string $value The value of the Anvato option
+		 * @return string
+		 */
+		return apply_filters( 'anvato_option_' . $key, $value );
 	}
 
 	/**
@@ -71,7 +94,7 @@ class Anvato_Library {
 	 * @return boolean.
 	 */
 	public function has_required_settings() {
-		return ! ( empty( $this->option_values ) || false !== array_search( '', array( $this->option_values['mcp_url'], $this->option_values['public_key'], $this->option_values['private_key'] ) ) );
+		return ! ( empty( $this->option_values ) || false !== array_search( '', array( $this->get_option( 'mcp_url' ), $this->get_option( 'public_key' ), $this->get_option( 'private_key' ) ) ) );
 	}
 
 	/**
@@ -83,7 +106,7 @@ class Anvato_Library {
 	 * @return string.
 	 */
 	private function build_request_signature( $time ) {
-		return base64_encode( hash_hmac( 'sha256', $this->xml_body . $time, $this->option_values['private_key'], true ) );
+		return base64_encode( hash_hmac( 'sha256', $this->xml_body . $time, $this->get_option( 'private_key' ), true ) );
 	}
 
 	/**
@@ -97,7 +120,7 @@ class Anvato_Library {
 	private function build_request_params( $args = array() ) {
 		$params = array();
 
-		foreach( $args as $key => $value ) {
+		foreach ( $args as $key => $value ) {
 			switch ( $key ) {
 				case 'lk' :
 					$params['filter_by'][] = 'name';
@@ -127,7 +150,7 @@ class Anvato_Library {
 			esc_url( $this->option_values['mcp_url'] ),
 			$time,
 			urlencode( $this->build_request_signature( $time ) ),
-			$this->option_values['public_key'],
+			$this->get_option( 'public_key' ),
 			build_query( $params )
 		);
 	}
@@ -212,6 +235,19 @@ class Anvato_Library {
 		);
 		$args = wp_parse_args( $args, $defaults );
 
+		/**
+		 * Modify the Anvato Library Search Arguments
+		 *
+		 * Tranform the search arguments passed to the Anvato Library when retrieving
+		 * videos to display inside of the media explorer.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param array $args Arguments to be passed to the Anvato Library
+		 * @return array
+		 */
+		$args = apply_filters( 'anvato_search_args', $args );
+
 		$response = $this->request( $this->build_request_params( $args ) );
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -224,7 +260,6 @@ class Anvato_Library {
 			}
 		}
 	}
-
 }
 
 /**

@@ -76,6 +76,17 @@ class MEXP_Anvato_Template extends MEXP_Template {
 				<?php endforeach; ?>
 			</select>
 
+			<?php
+			/**
+			 * Anvato Search Settings
+			 *
+			 * Add input fields to Anvato Library Search.
+			 *
+			 * @since 0.1.0
+			 */
+			do_action( 'anvato_mexp_search_inputs' );
+			?>
+
 			<input class="button button-large" type="submit" value="<?php esc_attr_e( 'Search', 'anvato' ); ?>">
 			<div class="spinner"></div>
 		</form>

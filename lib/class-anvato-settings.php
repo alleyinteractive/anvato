@@ -4,7 +4,7 @@
  * Anvato Settings
  */
 
-if ( !class_exists( 'Anvato_Settings' ) ) :
+if ( ! class_exists( 'Anvato_Settings' ) ) :
 
 class Anvato_Settings {
 
@@ -69,7 +69,7 @@ class Anvato_Settings {
 
 	public function field( $args ) {
 		$args = wp_parse_args( $args, array(
-			'type' => 'text'
+			'type' => 'text',
 		) );
 
 		if ( empty( $args['field'] ) ) {
@@ -80,8 +80,16 @@ class Anvato_Settings {
 	}
 
 	public function sanitize_options( $in ) {
-		# Validate data
-		$out = array();
+		/**
+		 * Anvato Sanitized Options
+		 *
+		 * Modify the options that are saved by Anvato. The default options
+		 * cannot be overwritten.
+		 *
+		 * @var $options array Options to be sanitized and saved
+		 * @return array
+		 */
+		$out = (array) apply_filters( 'anvato_settings_sanitize_options', array(), $in );
 
 		$out['mcp_url']              = sanitize_text_field( $in['mcp_url'] );
 		$out['mcp_id']               = sanitize_text_field( $in['mcp_id'] );
@@ -114,7 +122,6 @@ class Anvato_Settings {
 	</div>
 	<?php
 	}
-
 }
 
 function Anvato_Settings() {
