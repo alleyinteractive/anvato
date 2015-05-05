@@ -203,8 +203,7 @@ class Anvato_Library {
 		$url = $this->build_request_url( $params, time() );
 		$args = array( 'body' => $this->xml_body );
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
-			// Timeout increased for the master branch only.
-			$response = vip_safe_wp_remote_get( $url, false, 3, 3, 20, $args );
+			$response = vip_safe_wp_remote_get( $url, false, 3, 2, 20, $args );
 		} else {
 			$response = wp_remote_get( $url, $args );
 		}
