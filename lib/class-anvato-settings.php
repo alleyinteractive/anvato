@@ -59,8 +59,8 @@ class Anvato_Settings {
 		add_settings_field( 'adobe_trackingserver', __( 'Adobe Analytics Tracking Server:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'adobe_trackingserver' ) );
 		add_settings_field( 'width', __( 'Default Width:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'width' ) );
 		add_settings_field( 'height', __( 'Default Height:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'height' ) );
-		add_settings_field( 'public_key', __( 'Station Public Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'public_key' ) );
-		add_settings_field( 'private_key', __( 'Station Private Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'private_key', 'type' => 'password' ) );
+		add_settings_field( 'public_key', __( 'Public Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'public_key' ) );
+		add_settings_field( 'private_key', __( 'Private Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'private_key', 'type' => 'password' ) );
 	}
 
 	public function action_admin_menu() {
