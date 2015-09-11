@@ -250,15 +250,24 @@ class Anvato_Library {
 
 		$response = $this->request( $this->build_request_params( $args ) );
 		if ( is_wp_error( $response ) ) {
-			return $response;
+			$videos = $response;
 		} else {
 			$xml = simplexml_load_string( wp_remote_retrieve_body( $response ) );
 			if ( is_object( $xml ) ) {
-				return $xml->params->video_list->xpath( '//video' );
+				$videos = $xml->params->video_list->xpath( '//video' );
 			} else {
-				return new WP_Error( 'parse_error', __( 'There was an error processing the search results.', 'anvato' ) );
+				$videos = new WP_Error( 'parse_error', __( 'There was an error processing the search results.', 'anvato' ) );
 			}
 		}
+
+		/**
+		 * Fires after a search of the Anvato library.
+		 *
+		 * @param array|WP_Error $videos Array of SimpleXMLElement videos or WP_Error.
+		 */
+		do_action( 'anvato_library_after_search', $videos );
+
+		return $videos;
 	}
 }
 
