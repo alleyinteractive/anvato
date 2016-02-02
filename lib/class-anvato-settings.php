@@ -59,6 +59,7 @@ class Anvato_Settings {
 		add_settings_field( 'adobe_trackingserver', __( 'Adobe Analytics Tracking Server:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'adobe_trackingserver' ) );
 		add_settings_field( 'width', __( 'Default Width:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'width' ) );
 		add_settings_field( 'height', __( 'Default Height:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'height' ) );
+		add_settings_field( 'html5', __( 'Use HTML5 Player:', 'anvato' ), array( self::$instance, 'default_true_checkbox' ), self::SLUG, 'general', array( 'field' => 'html5' ) );
 		add_settings_field( 'public_key', __( 'Public Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'public_key' ) );
 		add_settings_field( 'private_key', __( 'Private Key:', 'anvato' ), array( self::$instance, 'field' ), self::SLUG, 'general', array( 'field' => 'private_key', 'type' => 'password' ) );
 	}
@@ -77,6 +78,20 @@ class Anvato_Settings {
 		}
 
 		printf( '<input type="%s" name="%s[%s]" value="%s" size="50" />', esc_attr( $args['type'] ), esc_attr( self::SLUG ), esc_attr( $args['field'] ), esc_attr( $this->get_option( $args['field'] ) ) );
+	}
+
+	public function default_true_checkbox( $args ) {
+		if ( empty( $args['field'] ) ) {
+			return;
+		}
+
+		$current = $this->get_option( $args['field'] );
+
+		if ( null === $current ) {
+			$current = true;
+		}
+
+		printf( '<input type="checkbox" name="%s[%s]" value="1" %s />', esc_attr( self::SLUG ), esc_attr( $args['field'] ), esc_attr( checked( $current, true, false ) ) );
 	}
 
 	public function sanitize_options( $in ) {
@@ -104,6 +119,7 @@ class Anvato_Settings {
 		$out['adobe_trackingserver'] = sanitize_text_field( $in['adobe_trackingserver'] );
 		$out['width']                = sanitize_text_field( $in['width'] );
 		$out['height']               = sanitize_text_field( $in['height'] );
+		$out['html5']                = ( '1' === $in['html5'] );
 		$out['public_key']           = sanitize_text_field( $in['public_key'] );
 		$out['private_key']          = sanitize_text_field( $in['private_key'] );
 

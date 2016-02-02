@@ -54,6 +54,9 @@ function anvato_shortcode( $attr ) {
 	# Set other attributes that can't be overridden
 	$json['pInstance'] = 'p' . $anvato_player_index++;
 
+	// Backcompat for HTML5, on by default but possibly not in the option value.
+	$json['html5'] = ( isset( $defaults['html5'] ) ) ? (bool) $defaults['html5'] : true;
+
 	# Set the player URL, which isn't part of the JSON but can be overridden
 	$player_url = ! empty( $attr['player_url'] ) ? $attr['player_url'] : $defaults['player_url'];
 
