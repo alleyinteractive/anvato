@@ -92,8 +92,10 @@ class MEXP_Anvato_Service extends MEXP_Service {
 			 *
 			 * @param  MEXP_Response_Item $item The response item.
 			 * @param  SimpleXMLElement $video The XML for the video from the API.
+			 * @param  array $results Array with SimpleXMLElements of videos.
+			 * @param  array $params Search parameters.
 			 */
-			$response->add_item( apply_filters( 'anvato_mexp_response_item', $item, $video ) );
+			$response->add_item( apply_filters( 'anvato_mexp_response_item', $item, $video, $results, $params ) );
 		}
 		return $response;
 	}

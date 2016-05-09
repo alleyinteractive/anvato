@@ -78,9 +78,7 @@ class MEXP_Anvato_Template extends MEXP_Template {
 
 			<?php
 			/**
-			 * Anvato Search Settings
-			 *
-			 * Add input fields to Anvato Library Search.
+			 * Fires after the default inputs in the Anvato Library search tab.
 			 *
 			 * @since 0.1.0
 			 */

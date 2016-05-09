@@ -33,15 +33,27 @@ class Anvato_Settings {
 	}
 
 	public function get_options() {
-		if ( empty( $this->options ) ) {
-			$this->options = get_option( self::SLUG );
-		}
+		// Property set for backcompat.
+		$this->options = get_option( self::SLUG );
 		return $this->options;
 	}
 
 	public function get_option( $key ) {
-		$this->get_options();
-		return isset( $this->options[ $key ] ) ? $this->options[ $key ] : null;
+		$options = $this->get_options();
+
+		$value = ( array_key_exists( $key, $options ) ) ? $options[ $key ] : null;
+
+		/**
+		 * Filter the value of a key in the Anvato option.
+		 *
+		 * The dynamic portion of the hook name, `$key`, refers to the key of
+		 * the option that is being requested.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param string $value The value of the Anvato option
+		 */
+		return apply_filters( 'anvato_option_' . $key, $value );
 	}
 
 	public function action_admin_init() {

@@ -19,13 +19,6 @@ class Anvato_Library {
 	private $api_request_url = '%s/api?ts=%d&sgn=%s&id=%s&%s';
 
 	/**
-	 * The value of the plugin settings on instantiation.
-	 *
-	 * @var array.
-	 */
-	private $option_values;
-
-	/**
 	 * The body of the XML request to send to the API.
 	 *
 	 * @todo Possibly convert to a printf()-friendly string for substituting
@@ -47,13 +40,6 @@ class Anvato_Library {
 	protected static $instance = null;
 
 	/**
-	 * Initialize the class.
-	 */
-	private function __construct() {
-		$this->option_values = get_option( Anvato_Settings::SLUG );
-	}
-
-	/**
 	 * Return an instance of this class.
 	 *
 	 * @return object.
@@ -72,20 +58,7 @@ class Anvato_Library {
 	 * @return string
 	 */
 	public function get_option( $key ) {
-		$value = ( ! empty( $this->option_values[ $key ] ) ) ? $this->option_values[ $key ] : null;
-
-		/**
-		 * Modify the Anvato option value
-		 *
-		 * Filter the value of the Anvato option. The dynamic portion of the hook name,
-		 * `$key`, refers to the key of the option that is being requested.
-		 *
-		 * @since 0.1.0
-		 *
-		 * @param string $value The value of the Anvato option
-		 * @return string
-		 */
-		return apply_filters( 'anvato_option_' . $key, $value );
+		return Anvato_Settings::instance()->get_option( $key );
 	}
 
 	/**
@@ -105,8 +78,8 @@ class Anvato_Library {
 	 * @param  int $time UNIX timestamp of the request.
 	 * @return string.
 	 */
-	private function build_request_signature( $time ) {
-		return base64_encode( hash_hmac( 'sha256', $this->xml_body . $time, $this->get_option( 'private_key' ), true ) );
+	private function build_request_signature( $time, $private_key ) {
+		return base64_encode( hash_hmac( 'sha256', $this->xml_body . $time, $private_key, true ) );
 	}
 
 	/**
@@ -144,13 +117,13 @@ class Anvato_Library {
 	 *     function because the same timestamp is needed more than once.
 	 * @return string The URL after formatting with sprintf().
 	 */
-	private function build_request_url( $params = array(), $time ) {
+	private function build_request_url( $params = array(), $time, $public_key, $private_key ) {
 		return sprintf(
 			$this->api_request_url,
 			esc_url( $this->option_values['mcp_url'] ),
 			$time,
-			urlencode( $this->build_request_signature( $time ) ),
-			$this->get_option( 'public_key' ),
+			urlencode( $this->build_request_signature( $time, $private_key ) ),
+			$public_key,
 			build_query( $params )
 		);
 	}
@@ -195,12 +168,12 @@ class Anvato_Library {
 	 * @param array $params Search parameters.
 	 * @return string|WP_Error String of XML of success, or WP_Error on failure.
 	 */
-	private function request( $params ) {
+	private function request( $params, $time, $public_key, $private_key ) {
 		if ( ! $this->has_required_settings() ) {
 			return new WP_Error( 'missing_required_settings', __( 'The MCP URL, Public Key, and Private Key settings are required.', 'anvato' ) );
 		}
 
-		$url = $this->build_request_url( $params, time() );
+		$url = $this->build_request_url( $params, $time, $public_key, $private_key );
 		$args = array( 'body' => $this->xml_body );
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 			$response = vip_safe_wp_remote_get( $url, false, 3, 2, 20, $args );
@@ -236,7 +209,7 @@ class Anvato_Library {
 		$args = wp_parse_args( $args, $defaults );
 
 		/**
-		 * Modify the Anvato Library Search Arguments
+		 * Filter the Anvato Library search arguments.
 		 *
 		 * Tranform the search arguments passed to the Anvato Library when retrieving
 		 * videos to display inside of the media explorer.
@@ -244,11 +217,31 @@ class Anvato_Library {
 		 * @since 0.1.0
 		 *
 		 * @param array $args Arguments to be passed to the Anvato Library
-		 * @return array
 		 */
 		$args = apply_filters( 'anvato_search_args', $args );
 
-		$response = $this->request( $this->build_request_params( $args ) );
+		/**
+		 * Filter the public key used to search the Anvato library.
+		 *
+		 * @since
+		 *
+		 * @param string $public_key
+		 * @param array $args
+		 */
+		$public_key = apply_filters( 'anvato_search_public_key', $this->get_option( 'public_key' ), $args );
+
+		/**
+		 * Filter the private key used to search the Anvato library.
+		 *
+		 * @since
+		 *
+		 * @param string $private_key
+		 * @param array $args
+		 */
+		$private_key = apply_filters( 'anvato_search_private_key', $this->get_option( 'private_key' ), $args );
+
+		$response = $this->request( $this->build_request_params( $args ), time(), $public_key, $private_key );
+
 		if ( is_wp_error( $response ) ) {
 			$videos = $response;
 		} else {
