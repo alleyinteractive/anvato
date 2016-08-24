@@ -200,13 +200,7 @@ class Anvato_Library {
 			return new WP_Error( 'missing_required_settings', __( 'The MCP URL, Public Key, and Private Key settings are required.', 'anvato' ) );
 		}
 
-		$url = $this->build_request_url( $params, time() );
-		$args = array( 'body' => $this->xml_body );
-		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
-			$response = vip_safe_wp_remote_get( $url, false, 3, 2, 20, $args );
-		} else {
-			$response = wp_remote_get( $url, $args );
-		}
+		$response = wp_remote_post( $this->build_request_url( $params, time() ), array( 'body' => $this->xml_body ) );
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
