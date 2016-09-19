@@ -37,85 +37,200 @@ $anvato_player_data = array();
  */
 function anvato_shortcode( $attr ) {
 	global $anvato_player_index, $anvato_player_data;
-	$defaults = Anvato_Settings()->get_options();
+	$settings = Anvato_Settings();
 
-	# Set the attributes which the shortcode can override
+	// Set the attributes which the shortcode can override.
 	$json = shortcode_atts( array(
-		'mcp'        => $defaults['mcp_id'],
-		'profile'    => $defaults['profile'],
-		'station_id' => $defaults['station_id'],
-		'width'      => $defaults['width'],
-		'height'     => $defaults['height'],
+		'mcp'        => $settings->get_option( 'mcp_id' ),
+		'profile'    => $settings->get_option( 'profile' ),
+		'station_id' => $settings->get_option( 'station_id' ),
+		'width'      => $settings->get_option( 'width' ),
+		'height'     => $settings->get_option( 'height' ),
 		'video'      => null,
 		'playlist'   => null,
 		'autoplay'   => false,
+		'sharelink'  => null,
 	), $attr, 'anvplayer' );
 
-	# Set other attributes that can't be overridden
+	// Validate the video/playlist id(s).
+	$video_ids = explode( ',', $json['video'] );
+
+	if ( count( $video_ids ) > 1 ) {
+		unset( $json['video'] );
+		$json['playlist'] = $video_ids;
+	} elseif ( ! empty( $attr['playlist'] ) ) {
+		unset( $json['video'] );
+		$json['playlist'] = intval( $attr['playlist'] );
+	} else {
+		$json['video'] = $json['video'];
+	}
+
+	// Share link
+	if ( ! empty( $json['shareLink'] ) && $settings->has_option( 'default_share_link' ) ) {
+		$json['shareLink'] = $settings->get_option( 'default_share_link' );
+	}
+
+	// Set other attributes that can't be overridden.
 	$json['pInstance'] = 'p' . $anvato_player_index++;
 
-	// Backcompat for HTML5, on by default but possibly not in the option value.
-	$json['html5'] = ( isset( $defaults['html5'] ) ) ? (bool) $defaults['html5'] : true;
+	// Set the player URL, which isn't part of the JSON but can be overridden.
+	$player_url = ( ! empty( $attr['player_url'] ) ) ? $attr['player_url'] : $settings->get_option( 'player_url' );
 
-	# Set the player URL, which isn't part of the JSON but can be overridden
-	$player_url = ! empty( $attr['player_url'] ) ? $attr['player_url'] : $defaults['player_url'];
-
-	# Set the DFP Ad Tag, which can also be overridden
-	if ( ! empty( $defaults['adtag'] ) && ( ! isset( $attr['plugin_dfp_adtagurl'] ) || ( empty( $attr['plugin_dfp_adtagurl'] ) && $attr['plugin_dfp_adtagurl'] !== 'false' ) ) ) {
-		$json['plugins']['dfp'] = array( 'adTagUrl' => $defaults['adtag'] );
-	} elseif ( ! empty( $attr['plugin_dfp_adtagurl'] ) && $attr['plugin_dfp_adtagurl'] !== 'false' ) {
+	// Set the DFP Ad Tag, which can also be overridden.
+	if ( $settings->has_option( 'adtag' ) && ( ! isset( $attr['plugin_dfp_adtagurl'] ) || ( empty( $attr['plugin_dfp_adtagurl'] ) && 'false' !== $attr['plugin_dfp_adtagurl'] ) ) ) {
+		$json['plugins']['dfp'] = array( 'adTagUrl' => $settings->get_option( 'adtag' ) );
+	} elseif ( ! empty( $attr['plugin_dfp_adtagurl'] ) && 'false' !== $attr['plugin_dfp_adtagurl'] ) {
 		$json['plugins']['dfp'] = array( 'adTagUrl' => $attr['plugin_dfp_adtagurl'] );
 	}
 
-	# Set the Tracker ID, which can be overridden
-	if ( ! isset( $attr['tracker_id'] ) && ! empty( $defaults['tracker_id'] ) ) {
-		$json['plugins']['analytics'] = array( 'pdb' => $defaults['tracker_id'] );
+	// DFP advanced tracking.
+	if ( $settings->has_option( 'advanced_targeting' ) ) {
+		$json['plugins']['dfp'] = json_decode( $settings->get_option( 'advanced_targeting' ) );
+	}
+
+	// Set the Tracker ID, which can be overridden.
+	if ( ! isset( $attr['tracker_id'] ) && $settings->has_option( 'tracker_id' ) ) {
+		$json['plugins']['analytics'] = array( 'pdb' => $settings->get_option( 'tracker_id' ) );
 	} elseif ( isset( $attr['tracker_id'] ) && 'false' !== $attr['tracker_id'] ) {
 		$json['plugins']['analytics'] = array( 'pdb' => $attr['tracker_id'] );
 	}
 
-	# Set the Adobe Analytics information, which can be overridden or canceled
+	// Set the Adobe Analytics information, which can be overridden or canceled.
 	if ( ! isset( $attr['adobe_analytics'] ) || ( isset( $attr['adobe_analytics'] ) && 'false' != $attr['adobe_analytics'] ) ) {
-		if ( ! isset( $attr['adobe_profile'] ) && ! empty( $defaults['adobe_profile'] ) ) {
-			$json['plugins']['omniture']['profile'] = $defaults['adobe_profile'];
+		if ( ! isset( $attr['adobe_profile'] ) && $settings->has_option( 'adobe_profile' ) ) {
+			$json['plugins']['omniture']['profile'] = $settings->get_option( 'adobe_profile' );
 		} elseif ( isset( $attr['adobe_profile'] ) && 'false' !== $attr['adobe_profile'] ) {
 			$json['plugins']['omniture']['profile'] = $attr['adobe_profile'];
 		}
 
-		if ( ! isset( $attr['adobe_account'] ) && ! empty( $defaults['adobe_account'] ) ) {
-			$json['plugins']['omniture']['account'] = $defaults['adobe_account'];
+		if ( ! isset( $attr['adobe_account'] ) && $settings->has_option( 'adobe_account' ) ) {
+			$json['plugins']['omniture']['account'] = $settings->get_option( 'adobe_account' );
 		} elseif ( isset( $attr['adobe_account'] ) && 'false' !== $attr['adobe_account'] ) {
 			$json['plugins']['omniture']['account'] = $attr['adobe_account'];
 		}
 
-		if ( ! isset( $attr['adobe_trackingserver'] ) && ! empty( $defaults['adobe_trackingserver'] ) ) {
-			$json['plugins']['omniture']['trackingServer'] = $defaults['adobe_trackingserver'];
+		if ( ! isset( $attr['adobe_trackingserver'] ) && $settings->has_option( 'adobe_trackingserver' ) ) {
+			$json['plugins']['omniture']['trackingServer'] = $settings->get_option( 'adobe_trackingserver' );
 		} elseif ( isset( $attr['adobe_trackingserver'] ) && 'false' !== $attr['adobe_trackingserver'] ) {
 			$json['plugins']['omniture']['trackingServer'] = $attr['adobe_trackingserver'];
 		}
 	}
 
-	# Include the "seek to" time in this instance's localized data.
+	// Include the "seek to" time in this instance's localized data.
 	if ( isset( $attr['seek_to'] ) && is_numeric( $attr['seek_to'] ) ) {
 		$anvato_player_data[ $json['pInstance'] ]['seekTo'] = absint( $attr['seek_to'] ) * 1000;
 	}
 
-	# Clean up attributes as need be
+	// Clean up attributes as need be.
 	$json['autoplay'] = ( 'true' == $json['autoplay'] );
 
-	# Allow theme/plugins to filter the JSON before outputting
+	// Only in video mode, not in playlist mode.
+	if ( isset( $attr['no_pr'] ) && 'true' === $attr['no_pr'] && isset( $json['video'] ) ) {
+		unset( $json['plugins']['dfp'] );
+	}
+
+	if ( isset( $json['video'] ) && is_string( $json['video'] ) && 'c' === substr( $json['video'], 0, 1 ) ) {
+		$json['androidIntentPlayer'] = 'true';
+	}
+
+	// Ensure live video is not HTML5
+	$json['html5'] = ! ( isset( $json['video'] ) && boolval( preg_match( '/\D/', $json['video'] ) ) );
+
+	/**
+	 * Determine if the current request is for AMP
+	 *
+	 * @see https://www.ampproject.org/
+	 * @param $is_amp bool Determines if the current request is for AMP. Defaults
+	 *     to false.
+	 */
+	$is_amp_request = apply_filters( 'anvato_is_amp_request', false );
+
+	/**
+	 * Determine if the current request is for Facebook Instant
+	 *
+	 * @see https://developers.facebook.com/docs/instant-articles
+	 * @param $is_fbia bool Determines if the current request is for Facebook Instant.
+	 *     Defaults to false.
+	 */
+	$is_fbia_request = apply_filters( 'anvato_is_fbia_request', false );
+
+	// AMP/Facebook Instant request modifications.
+	if ( $is_amp_request || $is_fbia_request ) {
+		if ( isset( $json['video'] ) ) {
+			$json['v'] = $json['video'];
+			unset( $json['video'] );
+		}
+
+		if ( isset( $json['playlist'] ) ) {
+			$json['pl'] = $json['playlist'];
+			unset( $json['playlist'] );
+		}
+
+		$json['m'] = $json['mcp'];
+
+		unset( $json['mcp'] );
+		unset( $json['pInstance'] );
+
+		// Ensure that height/width are pixel values.
+		if ( false !== strpos( $json['width'], '%' ) ) {
+			$json['width'] = 640;
+		} else {
+			$json['width'] = absint( $json['width'] );
+		}
+
+		if ( false !== strpos( $json['height'], '%' ) ) {
+			$json['height'] = 360;
+		} else {
+			$json['height'] = absint( $json['height'] );
+		}
+
+		$json['p'] = 'default';
+		$json['html5'] = true;
+	}
+
+	// Allow theme/plugins to filter the JSON before outputting
 	$json = apply_filters( 'anvato_anvp_json', $json, $attr );
 
-	return "<div id='" . esc_attr( $json['pInstance'] ) . "'></div><script data-anvp='" . wp_json_encode( $json ) . "' src='" . esc_url( $player_url ) . "'></script>";
+	// AMP/Facebook Instance Response.
+	if ( $is_amp_request || $is_fbia_request ) {
+		return sprintf(
+			"<figure class='op-interactive'><iframe width='%d' height='%d' sandbox='allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox' layout='responsive'
+				scrolling='no' frameborder='0' allowfullscreen src='%s'></iframe></figure>",
+			absint( $json['width'] ),
+			absint( $json['height'] ),
+			esc_url( 'https://w3.cdn.anvato.net/player/prod/anvload.html?key=' . base64_encode( wp_json_encode( $json ) ) )
+		);
+	}
+
+	return sprintf(
+		"<div id='%s'></div><script data-anvp='%s' src='%s'></script>",
+		esc_attr( $json['pInstance'] ),
+		wp_json_encode( $json ),
+		esc_url( $player_url )
+	);
 }
 add_shortcode( 'anvplayer', 'anvato_shortcode' );
 
 /**
  * Generate an [anvplayer] shortcode for use in the editor.
  *
- * @param int $video The video ID
+ * @param  int $id The video/playlist ID
  * @return string The shortcode
  */
-function anvato_generate_shortcode( $video ) {
-	return '[anvplayer video="' . intval( $video ) . '"]';
+function anvato_generate_shortcode( $id, $type = 'vod' ) {
+	if ( 'playlist' !== $type ) {
+		$type = 'vod';
+	}
+
+	$shortcode = sprintf( '[anvplayer %s="%s"]', sanitize_text_field( $type ), esc_attr( $id ) );
+
+	/**
+	 * Modify the generated Anvato Shortcode
+	 *
+	 * @since 0.1
+	 * @param string $shortcode The generated shortcode
+	 * @param string $id Anvato Video/Playlist ID
+	 * @param string $type Shortcode type (vod/playlist)
+	 */
+	return apply_filters( 'anvato_generate_shortcode', $shortcode, $id, $type );
 }

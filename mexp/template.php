@@ -3,6 +3,16 @@
  * Backbone templates for various views for the Anvato service.
  */
 class MEXP_Anvato_Template extends MEXP_Template {
+	/**
+	 * Anvato Settings Instance
+	 *
+	 * @var Anvato_Settings
+	 */
+	private $settings;
+
+	public function __construct() {
+		$this->settings = Anvato_Settings::instance();
+	}
 
 	/**
 	 * Outputs the Backbone template for an item within search results.
@@ -12,19 +22,35 @@ class MEXP_Anvato_Template extends MEXP_Template {
 	 */
 	public function item( $id, $tab ) {
 	?>
-		<div id="mexp-item-<?php echo esc_attr( $tab ); ?>-{{ data.id }}" class="mexp-item-area" data-id="{{ data.id }}">
+	<div id="mexp-item-<?php echo esc_attr( $tab ); ?>-{{ data.id }}" class="mexp-item-area
+		<# if ( 'playlist' == data.meta.type ) {#>anvato-playlist-item<# }
+		else { if ( 'live' == data.meta.type ){ #>anvato-channel-item<# }
+		else { #>anvato-video-item<#}}#>" data-id="{{ data.id }}">
 			<div class="mexp-item-container clearfix">
-				<div class="mexp-item-thumb">
-					<img src="{{ data.thumbnail }}">
+
+				<div class="mexp-item-thumb" style="background-image: url({{ data.thumbnail }})" class="thickbox">
+					<# if ( data.meta.duration  ) { #>
+						<span>{{ data.meta.duration }}</span><#
+					} #>
 				</div>
 
 				<div class="mexp-item-main">
 					<div class="mexp-item-content">
-						{{ data.content }}
+						<span class="anv-title">{{ data.content }}</span>
+							<# if(data.meta.description) { #>
+								<span class="anv-desc">{{ data.meta.description }}</span><#
+							}#>
 					</div>
-					<div class="mexp-item-date">
-						{{ data.date }}
-					</div>
+					<# if ( data.meta.video_count ) { #>
+						<div class="mexp-item-meta">
+							<span>{{ data.meta.video_count }}</span>
+						</div>
+					<# } #>
+					<# if ( data.meta.category ) { #>
+						<div class="mexp-item-meta">
+							<?php echo sprintf( esc_html__( '%sCategory%s: %s', 'anvato' ), '<span>', '</span>', '{{ data.meta.category }}' ); ?>
+						</div>
+					<# } #>
 				</div>
 
 			</div>
@@ -42,6 +68,9 @@ class MEXP_Anvato_Template extends MEXP_Template {
 	 * @param string $id The template ID.
 	 */
 	public function thumbnail( $id ) {
+		if ( empty( $id ) ) {
+			return;
+		}
 		?>
 		<div class="mexp-item-thumb">
 			<img src="{{ data.thumbnail }}">
@@ -66,14 +95,21 @@ class MEXP_Anvato_Template extends MEXP_Template {
 				value="{{ data.params.q }}"
 				class="mexp-input-text mexp-input-search"
 				size="40"
-				placeholder="<?php esc_attr_e( 'Search for videos', 'anvato' ); ?>"
+				placeholder="<?php esc_attr_e( 'Search for videos or playlists', 'anvato' ); ?>"
 			>
 
 			<label for="anvato-max-results-input" class="screen-reader-text"><?php esc_html_e( 'Filter maximum number of results', 'anvato' ); ?></label>
 			<select id="anvato-max-results-input" name="max_results" class="mexp-input-text mexp-input-select">
 				<?php foreach ( array( 50, 25, 10, 5 ) as $num ) : ?>
-					<option value="<?php echo absint( $num ) ?>"><?php echo esc_html( sprintf( __( 'Up to %d results', 'anvato' ), $num ) ); ?></option>
+					<option value="<?php echo absint( $num ) ?>" <?php if ( 25 === $num ) { echo 'selected="selected"'; } ?>><?php echo esc_html( sprintf( __( 'Up to %d results', 'anvato' ), $num ) ); ?></option>
 				<?php endforeach; ?>
+			</select>
+
+			<label for="anvato-type" class="screen-reader-text"><?php esc_html_e( 'Select Type', 'anvato' ); ?></label>
+			<select id="anvato-type" name="type">
+				<option value="vod"><?php esc_html_e( 'Video on Demand', 'anvato' ); ?></option>
+				<option value="playlist"><?php esc_html_e( 'Playlists', 'anvato' ); ?></option>
+				<option value="live"><?php esc_html_e( 'Live Channel', 'anvato' ); ?></option>
 			</select>
 
 			<?php
