@@ -30,6 +30,10 @@ matrix:
 # e.g. copy database configurations, environment variables, etc.
 # Failures in this section will result in build status 'errored'.
 before_script:
+    - # Setup plugin information.
+    - plugin_slug="$(basename $(pwd))"
+    - mkdir -p "/tmp/wordpress/src/wp-content/plugins/$plugin_slug"
+    - cp -R . "/tmp/wordpress/src/wp-content/plugins/$plugin_slug/"
     # Install CodeSniffer for WordPress Coding Standards checks.
     - git clone https://github.com/squizlabs/PHP_CodeSniffer.git php-codesniffer
     # Install WordPress Coding Standards.
@@ -40,7 +44,7 @@ before_script:
     # @link https://github.com/squizlabs/PHP_CodeSniffer/blob/4237c2fc98cc838730b76ee9cee316f99286a2a7/CodeSniffer.php#L1941
     - scripts/phpcs --config-set installed_paths ../wordpress-coding-standards
     # Hop into themes directory.
-    - cd /tmp/wordpress/src/wp-content/themes/$theme_slug/
+    - cd /tmp/wordpress/src/wp-content/plugins/$plugin_slug/
     # After CodeSniffer install you should refresh your path.
     - phpenv rehash
 
