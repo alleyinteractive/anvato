@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Plugin Coding Standards Configuration">
+	<!-- Set a description for this ruleset. -->
+	<description>Code standard rules to check against a WordPress Plugin.</description>
+
+	<!-- Include the WordPress ruleset, with exclusions. -->
+	<rule ref="WordPress-VIP">
+		<exclude name="PEAR.Functions.FunctionCallSignature.Indent" />
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid">
+		<type>warning</type>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n.UnorderedPlaceholders">
+		<type>warning</type>
+	</rule>
+</ruleset>
