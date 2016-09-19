@@ -13,11 +13,6 @@ php:
     - "5.6"
     - "7.0"
 
-# Declare which versions of WordPress to test against.
-env:
-    # Trunk
-    - WP_VERSION=master WP_MULTISITE=1
-
 # Specify when travis should build.
 # Mainly, we don't want to build on feature branches, just on master, vip, and
 # during pull requests.
