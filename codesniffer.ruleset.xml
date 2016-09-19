@@ -15,4 +15,13 @@
 	<rule ref="WordPress.WP.I18n.UnorderedPlaceholders">
 		<type>warning</type>
 	</rule>
+
+	<rule ref="WordPress.WP.I18n.UnorderedPlaceholdersText">
+		<type>warning</type>
+	</rule>
+
+	<!-- Downgrade long condition comment missing -->
+	<rule ref="Squiz.Commenting.LongConditionClosingComment.Missing">
+		<type>warning</type>
+	</rule>
 </ruleset>
