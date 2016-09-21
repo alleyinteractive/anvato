@@ -2,7 +2,7 @@
 /**
  * Get data about videos using the Anvato API.
  *
- * @package
+ * @package Anvato
  */
 class Anvato_Library {
 
@@ -13,10 +13,23 @@ class Anvato_Library {
 	 * public key, and optional parameters.
 	 *
 	 * @see $this->build_request_url().
-	 *
 	 * @var string.
 	 */
 	private $api_request_url = '%s/api?ts=%d&sgn=%s&id=%s&%s';
+
+	/**
+	 * API calls
+	 *
+	 * Use a respective key here as the `$type` parameter to {@see Anvato_Library::search()}.
+	 *
+	 * @var array
+	 */
+	private $api_methods = array(
+		'categories' => 'list_categories',
+		'live'       => 'list_embeddable_channels',
+		'playlist'   => 'list_playlists',
+		'vod'        => 'list_videos',
+	);
 
 	/**
 	 * The value of the plugin settings on instantiation.
@@ -28,29 +41,30 @@ class Anvato_Library {
 	/**
 	 * The body of the XML request to send to the API.
 	 *
-	 * @todo Possibly convert to a printf()-friendly string for substituting
-	 *     "list_groups" for "list_videos.""
-	 *
 	 * @var string.
 	 */
-	private $xml_body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-		<request>
-			<type>list_videos</type>
-			<params></params>
-		</request>";
+	private $xml_body;
 
 	/**
 	 * Instance of this class.
 	 *
-	 * @var object.
+	 * @var Anvato_Library
 	 */
-	protected static $instance = null;
+	protected static $instance;
+
+	/**
+	 * Instance of the Anvato_Settings class
+	 *
+	 * @var Anvato_Settings
+	 */
+	protected $settings;
 
 	/**
 	 * Initialize the class.
 	 */
-	private function __construct() {
+	protected function __construct() {
 		$this->option_values = get_option( Anvato_Settings::SLUG );
+		$this->settings = Anvato_Settings::instance();
 	}
 
 	/**
@@ -66,35 +80,12 @@ class Anvato_Library {
 	}
 
 	/**
-	 * Retrieve a stored option value
-	 *
-	 * @param string $key The key of the option to retrieve
-	 * @return string
-	 */
-	public function get_option( $key ) {
-		$value = ( ! empty( $this->option_values[ $key ] ) ) ? $this->option_values[ $key ] : null;
-
-		/**
-		 * Modify the Anvato option value
-		 *
-		 * Filter the value of the Anvato option. The dynamic portion of the hook name,
-		 * `$key`, refers to the key of the option that is being requested.
-		 *
-		 * @since 0.1.0
-		 *
-		 * @param string $value The value of the Anvato option
-		 * @return string
-		 */
-		return apply_filters( 'anvato_option_' . $key, $value );
-	}
-
-	/**
 	 * Check whether the settings required for using the API are set.
 	 *
-	 * @return boolean.
+	 * @return boolean
 	 */
 	public function has_required_settings() {
-		return ! ( empty( $this->option_values ) || false !== array_search( '', array( $this->get_option( 'mcp_url' ), $this->get_option( 'public_key' ), $this->get_option( 'private_key' ) ) ) );
+		return ( $this->settings->has_option( 'mcp_url' ) && $this->settings->has_option( 'public_key' ) && $this->settings->has_option( 'private_key' ) );
 	}
 
 	/**
@@ -106,28 +97,74 @@ class Anvato_Library {
 	 * @return string.
 	 */
 	private function build_request_signature( $time ) {
-		return base64_encode( hash_hmac( 'sha256', $this->xml_body . $time, $this->get_option( 'private_key' ), true ) );
+		return base64_encode( hash_hmac( 'sha256', $this->xml_body . $time, $this->settings->get_option( 'private_key' ), true ) );
 	}
 
 	/**
 	 * Set up the filtering conditions to use as part of a search of the library.
 	 *
 	 * @param array $args {
-	 *		@type string $lk Search keyword.
+	 *     @type string $lk Video title search keyword.
+	 *     @type string $exp_date Used for video search, if set result includes videos that expire later than this date.
+	 *     @type int $page_no page Offset starting with 1.
+	 *     @type int $category_id MCP API filter for video list. Only videos with this category id will be returned.
+	 *     @type int $video_id MCP API filter for video list. Only video with this video id will be returned.
+	 *     @type int $program_id MCP API filter for videos in a program. Only videos with this program id will be returned
+	 *     @type bool $published_only MCP API filter for video list. Only published videos will be returned.
 	 * }
 	 * @return array.
 	 */
-	private function build_request_params( $args = array() ) {
+	private function build_request_parameters( $args = array() ) {
 		$params = array();
 
-		foreach ( $args as $key => $value ) {
-			switch ( $key ) {
-				case 'lk' :
-					$params['filter_by'][] = 'name';
-					$params['filter_cond'][] = 'lk';
-					$params['filter_value'][] = sanitize_text_field( $value );
-				break;
-			}
+		if ( isset( $args['lk'] ) ) {
+			$params['filter_by'][] = 'name';
+			$params['filter_cond'][] = 'lk';
+			$params['filter_value'][] = rawurlencode( sanitize_text_field( $args['lk'] ) );
+		}
+
+		if ( isset( $args['exp_date'] ) ) {
+			$params['filter_by'][] = 'exp_date';
+			$params['filter_cond'][] = 'ge';
+			$params['filter_value'][] = rawurlencode( sanitize_text_field( $args['exp_date'] ) );
+		}
+
+		if ( isset( $args['added_date'] ) ) {
+			$params['filter_by'][] = 'added_date';
+			$params['filter_cond'][] = 'ge';
+			$params['filter_value'][] = rawurlencode( sanitize_text_field( $args['added_date'] ) );
+		}
+
+		if ( isset( $args['page_no'] ) ) {
+			$params['page_no'] = (int) $args['page_no'];
+		}
+
+		if ( isset( $args['page_sz'] ) ) {
+			$params['page_sz'] = absint( $args['page_sz'] );
+		}
+
+		if ( isset( $args['category_id'] ) ) {
+			$params['filter_by'][] = 'category_id';
+			$params['filter_cond'][] = 'eq';
+			$params['filter_value'][] = rawurlencode( sanitize_text_field( $args['category_id'] ) );
+		}
+
+		if ( isset( $args['video_id'] ) ) {
+			$params['filter_by'][] = 'video_id';
+			$params['filter_cond'][] = 'eq';
+			$params['filter_value'][] = rawurlencode( sanitize_text_field( $args['video_id'] ) );
+		}
+
+		if ( isset( $args['program_id'] ) ) {
+			$params['filter_by'][] = 'program_id';
+			$params['filter_cond'][] = 'eq';
+			$params['filter_value'][] = rawurlencode( sanitize_text_field( $args['program_id'] ) );
+		}
+
+		if ( isset( $args['published_only'] ) && $args['published_only'] ) {
+			$params['filter_by'][] = 'published';
+			$params['filter_cond'][] = 'eq';
+			$params['filter_value'][] = 'true';
 		}
 
 		return $params;
@@ -147,10 +184,10 @@ class Anvato_Library {
 	private function build_request_url( $params = array(), $time ) {
 		return sprintf(
 			$this->api_request_url,
-			esc_url( $this->option_values['mcp_url'] ),
+			esc_url( $this->settings->get_option( 'mcp_url' ) ),
 			$time,
 			urlencode( $this->build_request_signature( $time ) ),
-			$this->get_option( 'public_key' ),
+			$this->settings->get_option( 'public_key' ),
 			build_query( $params )
 		);
 	}
@@ -193,18 +230,20 @@ class Anvato_Library {
 	 * @see  $this->build_request_parameters() for allowed search parameters.
 	 *
 	 * @param array $params Search parameters.
+	 * @param string $api_method API Method to call.
 	 * @return string|WP_Error String of XML of success, or WP_Error on failure.
 	 */
-	private function request( $params ) {
+	private function request( $params, $api_method ) {
 		if ( ! $this->has_required_settings() ) {
-			return new WP_Error( 'missing_required_settings', __( 'The MCP URL, Public Key, and Private Key settings are required.', 'anvato' ) );
+			return new WP_Error( 'missing_required_settings', __( 'The MCP URL, Public Key and Private Key settings are required.', 'anvato' ) );
 		}
 
-		$response = wp_remote_post( $this->build_request_url( $params, time() ), array( 'body' => $this->xml_body ) );
+		$this->set_xml_body( $api_method );
+		$response = wp_remote_post( $this->build_request_url( $params, time() ), array( 'body' => sprintf( $this->xml_body, $api_method ) ) );
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
-		} elseif ( wp_remote_retrieve_response_code( $response ) === 200 ) {
+		} elseif ( 200 === wp_remote_retrieve_response_code( $response ) ) {
 			if ( $this->is_api_error( $response ) ) {
 				return new WP_Error( 'api_error', sprintf( __( 'Anvato responded with an error (%s).', 'anvato' ), $this->get_api_error( $response ) ) );
 			} else {
@@ -221,36 +260,45 @@ class Anvato_Library {
 	 * @see  $this->build_request_parameters() for allowed search parameters.
 	 *
 	 * @param  array $args Search parameters.
+	 * @param  string Request type {@see Anvato_Library::$api_methods}
 	 * @return array|WP_Error Array with SimpleXMLElements of any videos found, or WP_Error on failure.
 	 */
-	public function search( $args = array() ) {
-		$defaults = array(
-			'lk' => '',
-		);
-		$args = wp_parse_args( $args, $defaults );
+	public function search( $args = array(), $type = 'vod' ) {
+		if ( empty( $this->api_methods[ $type ] ) ) {
+			return new WP_Error( 'anvato', sprintf( __( 'Unknown API call: %s', 'anvato' ), $type ) );
+		}
 
-		/**
-		 * Modify the Anvato Library Search Arguments
-		 *
-		 * Tranform the search arguments passed to the Anvato Library when retrieving
-		 * videos to display inside of the media explorer.
-		 *
-		 * @since 0.1.0
-		 *
-		 * @param array $args Arguments to be passed to the Anvato Library
-		 * @return array
-		 */
-		$args = apply_filters( 'anvato_search_args', $args );
+		$api_method = $this->api_methods[ $type ];
 
-		$response = $this->request( $this->build_request_params( $args ) );
+		if ( 'list_videos' === $api_method ) {
+			$args['published_only'] = true;
+		}
+
+		$response = $this->request( $this->build_request_parameters( $args ), $api_method );
 		if ( is_wp_error( $response ) ) {
-			$videos = $response;
+			$data = $response;
 		} else {
 			$xml = simplexml_load_string( wp_remote_retrieve_body( $response ) );
-			if ( is_object( $xml ) ) {
-				$videos = $xml->params->video_list->xpath( '//video' );
+			if ( ! is_object( $xml ) ) {
+				$data = new WP_Error( 'parse_error', __( 'There was an error processing the search results.', 'anvato' ) );
 			} else {
-				$videos = new WP_Error( 'parse_error', __( 'There was an error processing the search results.', 'anvato' ) );
+				switch ( $api_method ) {
+					case 'list_categories':
+						$data = $xml->params->category_list->xpath( '//category' );
+						break;
+
+					case 'list_embeddable_channels':
+						$data = $xml->params->channel_list->xpath( '//channel' );
+						break;
+
+					case 'list_playlists':
+						$data = $xml->params->video_list->xpath( '//playlist' );
+						break;
+
+					case 'list_videos':
+						$data = $xml->params->video_list->xpath( '//video' );
+						break;
+				}
 			}
 		}
 
@@ -258,17 +306,35 @@ class Anvato_Library {
 		 * Fires after a search of the Anvato library.
 		 *
 		 * @param array|WP_Error $videos Array of SimpleXMLElement videos or WP_Error.
+		 * @param string $api_method API Method requested {@see Anvato_Library::$api_methods}
 		 */
-		do_action( 'anvato_library_after_search', $videos );
+		do_action( 'anvato_library_after_search_' . $api_method, $data, $api_method );
 
-		return $videos;
+		/**
+		 * Fires after a search of the Anvato library.
+		 *
+		 * @param array|WP_Error $videos Array of SimpleXMLElement videos or WP_Error.
+		 * @param string $api_method API Method requested {@see Anvato_Library::$api_methods}
+		 */
+		do_action( 'anvato_library_after_search', $data, $api_method );
+
+		return $data;
+	}
+
+	/**
+	 * Update the XML Body with the current method being used
+	 *
+	 * @param string $method
+	 */
+	protected function set_xml_body( $method ) {
+		$this->xml_body = sprintf( '<?xml version="1.0" encoding="utf-8"?><request><type>%s</type><params></params></request>', $method );
 	}
 }
 
 /**
  * Helper function to use the class instance.
  *
- * @return object.
+ * @return Anvato_Library
  */
 function Anvato_Library() {
 	return Anvato_Library::get_instance();

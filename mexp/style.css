@@ -1,17 +1,73 @@
-.mexp-content-anvato .attachment {
-	width: 200px;
-	height: 200px;
+.mexp-content-anvato .mexp-item {
+	height: auto;
+	max-height: 200px;
+	overflow-y: hidden;
 }
-
-.mexp-content-anvato .attachment .selected {
-	border-color: #999;
+.mexp-content-anvato .mexp-item-main {
+	text-align: left;
+	color: #2b2b2b;
+	padding: 10px 10px 0;
+	max-height: 145px;
+	height: 145px;
+	overflow-y: hidden;
 }
-
-.mexp-content-anvato .mexp-item-content {
-	font-weight: bold;
+.mexp-content-anvato .mexp-item-thumb {
+	width: auto !important;
+	height: 120px;
+	background-color: rgba(243, 243, 243, 1) !important;
+	display: block;
+	background-position: center center;
+	background-size: cover;
+	position: relative;
 }
-
-/* "Load more" not yet supported. */
-#anvato-loadmore {
-	display: none !important;
+.mexp-content-anvato .mexp-item-thumb span {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 6px;
+	background: #000;
+	color: #FFF;
+	font-size: 13px;
+}
+.mexp-content-anvato .mexp-item:hover {
+	border-color: #999 !important;
+}
+.mexp-content-anvato .mexp-items > .selected {
+	border-color: transparent !important;
+}
+.mexp-content-anvato .mexp-item-meta,
+.mexp-content-anvato .mexp-item-channel {
+	font-size: 12px;
+	line-height: 14px;
+	margin: 5px 0;
+}
+.mexp-content-anvato .mexp-item-meta > span {
+	font-weight: 700;
+	min-width: 60px;
+	position: relative;
+	display: inline-block;
+}
+.mexp-content-anvato .mexp-item-channel > img {
+	vertical-align: middle;
+	margin: 3px 0;
+}
+.anv-title {
+	font-weight: 700;
+	font-size: 14px;
+	color: #222;
+	line-height: 14px;
+	display: block;
+	padding: 3px 0;
+}
+.anv-desc {
+	display: block;
+	color: #565656;
+	line-height: 13px;
+	font-size: 13px;
+}
+.anv-disabled {
+	font-style: italic;
+}
+#doPlaylist {
+	margin: 7px 0 0 7px;
 }
