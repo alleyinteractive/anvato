@@ -188,8 +188,15 @@ function anvato_shortcode( $attr ) {
 		$json['html5'] = true;
 	}
 
-	// Allow theme/plugins to filter the JSON before outputting
-	$json = apply_filters( 'anvato_anvp_json', $json, $attr );
+	/**
+	 * Filters the Anvato JSON before outputting.
+	 *
+	 * @param array $json            Parsed shortcode attributes to encode as JSON.
+	 * @param array $attr            Raw shortcode attributes.
+	 * @param bool  $is_amp_request  Whether this is Google AMP request.
+	 * @param bool  $is_fbia_request Whether this is a Facebook Instant Articles request.
+	 */
+	$json = apply_filters( 'anvato_anvp_json', $json, $attr, $is_amp_request, $is_fbia_request );
 
 	// AMP/Facebook Instance Response.
 	if ( $is_amp_request || $is_fbia_request ) {
