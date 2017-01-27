@@ -200,13 +200,19 @@ function anvato_shortcode( $attr ) {
 
 	// AMP/Facebook Instance Response.
 	if ( $is_amp_request || $is_fbia_request ) {
-		return sprintf(
-			"<figure class='op-interactive'><iframe width='%d' height='%d' sandbox='allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox' layout='responsive'
-				scrolling='no' frameborder='0' allowfullscreen src='%s'></iframe></figure>",
+		$html = sprintf(
+			"<iframe width='%d' height='%d' sandbox='allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox' layout='responsive'
+				scrolling='no' frameborder='0' allowfullscreen src='%s'></iframe>",
 			absint( $json['width'] ),
 			absint( $json['height'] ),
 			esc_url( 'https://w3.cdn.anvato.net/player/prod/anvload.html?key=' . base64_encode( wp_json_encode( $json ) ) )
 		);
+
+		if ( $is_fbia_request ) {
+			$html = '<figure class="op-interactive">' . $html . '</figure>';
+		}
+
+		return $html;
 	}
 
 	return sprintf(
@@ -221,7 +227,7 @@ add_shortcode( 'anvplayer', 'anvato_shortcode' );
 /**
  * Generate an [anvplayer] shortcode for use in the editor.
  *
- * @param  int $id The video/playlist ID
+ * @param  string $id The video/playlist ID
  * @return string The shortcode
  */
 function anvato_generate_shortcode( $id, $type = 'vod' ) {
