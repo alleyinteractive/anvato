@@ -29,6 +29,7 @@ class Anvato_Library {
 		'live'       => 'list_embeddable_channels',
 		'playlist'   => 'list_playlists',
 		'vod'        => 'list_videos',
+		'video_urls' => 'list_video_published_urls',
 	);
 
 	/**
@@ -167,6 +168,10 @@ class Anvato_Library {
 			$params['filter_value'][] = 'true';
 		}
 
+		if ( isset( $args['upload_id'] ) ) {
+			$params['upload_id'] = intval( $args['upload_id'] );
+		}
+
 		return $params;
 	}
 
@@ -297,6 +302,10 @@ class Anvato_Library {
 
 					case 'list_videos':
 						$data = $xml->params->video_list->xpath( '//video' );
+						break;
+
+					case 'list_video_published_urls':
+						$data = $xml->params->video_published_url_list->xpath( '//video_published_url' );
 						break;
 				}
 			}
